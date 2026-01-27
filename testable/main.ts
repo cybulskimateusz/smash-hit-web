@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import './style.css';
 
-import App from '@src/App';
+import App from '@src/App/App';
 import { getExposedProperties, resolveTarget } from '@testable/index';
 import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -20,7 +20,7 @@ const testablesSorted = window.testableRegistry.sort((a, b) => a.params.path.loc
 testablesSorted.forEach((testable) => {
 
   testablesLibrary.add(
-    {openLink: () => window.location.pathname = testable.params.path},
+    { openLink: () => window.location.pathname = testable.params.path },
     'openLink',
   ).name(testable.params.path);
 

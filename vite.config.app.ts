@@ -2,6 +2,7 @@
 // @ts-nocheck
 import path from 'path';
 import { defineConfig } from 'vite';
+import wasm from 'vite-plugin-wasm';
 
 import { viteGlslify } from './plugins/viteGlslify';
 
@@ -24,5 +25,5 @@ export default defineConfig({
   optimizeDeps: {
     entries: [path.resolve(__dirname, 'src/**/*.ts')],
   },
-  plugins: [viteGlslify()]
+  plugins: [wasm(), viteGlslify()],
 });

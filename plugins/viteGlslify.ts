@@ -5,7 +5,7 @@ import path from 'path';
 import type { Plugin } from 'vite';
 
 // vite-plugin-glslify throws dependency error
-export const viteGlslify = (): Plugin => ({
+const viteGlslify = (): Plugin => ({
   name: 'vite-plugin-glslify',
   transform(code, id) {
     if (!/\.(glsl|vert|frag)$/.test(id)) return null;
@@ -25,3 +25,5 @@ export const viteGlslify = (): Plugin => ({
     }
   }
 });
+
+export default viteGlslify;

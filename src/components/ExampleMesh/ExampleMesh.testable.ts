@@ -1,13 +1,13 @@
 import { Expose, Testable } from '@testable/index';
 
-import { ExampleMesh } from './ExampleMesh';
+import  ExampleMesh  from './ExampleMesh';
 
 @Testable({
   path: '/components/ExampleMesh',
   useOrbitControls: true,
   useFbnBackground: true,
 })
-export class ExampleMeshTestable extends ExampleMesh {
+export default class extends ExampleMesh {
   @Expose({ min: 0.5, max: 3, step: 0.1, folder: 'Scale', target: 'scale.x' })
   public _scaleX!: number;
 

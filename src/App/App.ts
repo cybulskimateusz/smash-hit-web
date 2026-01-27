@@ -1,5 +1,8 @@
+import RAPIER from '@dimforge/rapier3d';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
+
+import InteractionHandler from './InteractionHadler';
 
 export const CAMERA_INITIAL_PROPERTIES = {
   fov: 75,
@@ -15,6 +18,10 @@ class App {
   public get camera() { return this._camera; }
   private _renderer: THREE.WebGLRenderer;
   public get renderer() { return this._renderer; }
+  private _world = new RAPIER.World({ x:0, y:-9.81, z:0 });
+  public get world() { return this._world; }
+  private _interactionHandler: InteractionHandler;
+  public get interactionHandler() { return this._interactionHandler; }
 
   private animationFrame?: ReturnType<typeof requestAnimationFrame>;
 
@@ -33,9 +40,9 @@ class App {
     this._renderer.setSize(window.innerWidth, window.innerHeight);
     this._renderer.setPixelRatio(window.devicePixelRatio);
 
-    window.addEventListener('resize', this.onResize);
     this.animate();
-
+    this.addEventListeners();
+    this._interactionHandler = new InteractionHandler(this);
   }
 
   protected onResize() {
@@ -50,8 +57,16 @@ class App {
   }
 
   public destroy() {
+    this.removeEventListeners();
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
     this._renderer.dispose();
+  }
+
+  private addEventListeners() {
+    window.addEventListener('resize', this.onResize);
+  }
+
+  private removeEventListeners() {
     window.removeEventListener('resize', this.onResize);
   }
 }

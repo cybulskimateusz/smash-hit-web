@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import type App from '@src/App';
+import type App from '@src/App/App';
 import * as THREE from 'three';
 
 interface TestableParams {
@@ -10,17 +10,11 @@ interface TestableParams {
 }
 
 export interface ExposeOptions {
-    min?: number;
-    max?: number;
-    step?: number;
-    folder?: string;
-    target?: string;
+    min?: number; max?: number; step?: number; folder?: string; target?: string;
+    name?: string; listen?: boolean; color?: boolean; options?: string[] | number[] | Record<string, unknown>;
 }
 
-export interface ExposedProperty {
-    key: string;
-    options: ExposeOptions;
-}
+export interface ExposedProperty { key: string; options: ExposeOptions }
 
 export function resolveTarget(instance: object, path: string): { obj: object; key: string } {
   const parts = path.split('.');
@@ -57,15 +51,9 @@ export function getExposedProperties(instance: object): ExposedProperty[] {
   return Reflect.getMetadata(EXPOSED_KEY, instance) || [];
 }
 
-export function Testable(params: TestableParams) {
-  return function (constructor: new (app: App) => THREE.Object3D) {
-    window.testableRegistry.push({
-      params: {
-        path: params.path,
-        useOrbitControls: params.useOrbitControls || false,
-        useFbnBackground: params.useFbnBackground || false
-      },
-      controller: constructor
-    });
+export function Testable(p: TestableParams) {
+  return function (ctor: new (app: App) => THREE.Object3D) {
+    const params: TestableParams = { path: p.path, useOrbitControls: !!p.useOrbitControls };
+    window.testableRegistry.push({ params: { ...params, useFbnBackground: !!p.useFbnBackground }, controller: ctor });
   };
 }

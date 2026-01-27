@@ -1,4 +1,4 @@
-.PHONY: help dev dev-frontend dev-storybook dev-backend down logs clean
+.PHONY: help dev dev-frontend dev-storybook dev-backend down logs clean test
 
 help:
 	@echo 'Usage: make [target]'
@@ -26,6 +26,9 @@ logs-app:
 
 logs-testable:
 	docker compose logs -f testable
+
+test:
+	npm test
 
 clean:
 	docker compose down -v --rmi all
