@@ -1,9 +1,8 @@
-import * as THREE from 'three';
-
-import getLinesFromPolygons from '../math/getLinesFromPolygons/getLinesFromPolygons';
+import getLinesFromPolygon from '@src/utils/math/getLinesFromPolygon/getLinesFromPolygon';
 import getRandomPointsAroundPoint,
-{ type GetRandomPointsAroundPointProps } from '../math/getRandomPointsAroundPoint/getRandomPointsAroundPoint';
-import getVoronoiCellsFromPoints from '../math/getVoronoiCellsFromPoints/getVoronoiCellsFromPoints';
+{ type GetRandomPointsAroundPointProps } from '@src/utils/math/getRandomPointsAroundPoint/getRandomPointsAroundPoint';
+import getVoronoiCellsFromPoints from '@src/utils/math/getVoronoiCellsFromPoints/getVoronoiCellsFromPoints';
+import * as THREE from 'three';
 
 export interface GetExplosionMapProps extends GetRandomPointsAroundPointProps {
     planeSize: Size2D;
@@ -23,7 +22,12 @@ export interface GetExplosionMapProps extends GetRandomPointsAroundPointProps {
 const getExplosionMap = (props: GetExplosionMapProps): THREE.BufferAttribute => {
   const points = getRandomPointsAroundPoint(props);
   const cells = getVoronoiCellsFromPoints(points, props.planeSize);
-  const lines = getLinesFromPolygons(cells);
+  const lines = [];
+
+  for (const cell of cells) {
+    const linesForCell = getLinesFromPolygon(cell);
+    lines.push(...linesForCell);
+  }
 
   return new THREE.BufferAttribute(new Float32Array(lines), 3);
 };

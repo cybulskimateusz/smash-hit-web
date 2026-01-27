@@ -2,18 +2,21 @@ import type App from '@src/App/App';
 import { Expose, Testable } from '@testable/index';
 import * as THREE from 'three';
 
-import getExplosionMap from './getExplosionMap';
+import getExplosionMap from './getExplosionMap3D';
 
-@Testable({ path: '/utils/getExplosionMap', useOrbitControls: true })
+@Testable({ path: '/utils/three/getExplosionMap3D', useOrbitControls: true })
 export default class extends THREE.Object3D {
   @Expose({ min: 3, max: 200, step: 1, folder: 'Settings' })
     pointsAmount = 128;
 
-  @Expose({ min: 0.5, max: 10, step: 0.1, folder: 'Settings' })
-    planeWidth = 1;
+  @Expose({ min: 1, max: 10, step: 0.01, folder: 'Box' })
+    boxWidth = 5;
 
-  @Expose({ min: 0.5, max: 10, step: 0.1, folder: 'Settings' })
-    planeHeight = 1;
+  @Expose({ min: 1, max: 10, step: 0.01, folder: 'Box' })
+    boxHeight = 5;
+
+  @Expose({ min: 0.5, max: 10, step: 0.01, folder: 'Box' })
+    boxDepth = 0.2;
 
   @Expose({ min: 0.0, max: 10, step: 0.1, folder: 'Settings' })
     outerRadius = 0.07;
@@ -27,19 +30,13 @@ export default class extends THREE.Object3D {
   @Expose({ min: -5, max: 5, step: 0.0001, folder: 'Settings' })
     centerPointY = 0;
 
-  @Expose({ folder: 'Settings' })
+  @Expose({ folder: 'refresh' })
     regenerate = () => this.generate();
 
-  private cellsLine: THREE.LineSegments;
-  private cellsGeometry: THREE.BufferGeometry;
+  private pieces: THREE.Mesh[] = [];
 
   constructor(_app: App) {
     super();
-
-    this.cellsGeometry = new THREE.BufferGeometry();
-    const cellsMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-    this.cellsLine = new THREE.LineSegments(this.cellsGeometry, cellsMaterial);
-    this.add(this.cellsLine);
 
     this.generate();
   }
@@ -49,13 +46,17 @@ export default class extends THREE.Object3D {
       amount: this.pointsAmount,
       outerRadius: this.outerRadius,
       innerRadius: this.innerRadius,
-      planeSize: { width:this.planeWidth, height: this.planeHeight },
+      boxSize: new THREE.Vector3(this.boxWidth, this.boxHeight, this.boxDepth),
       center: [this.centerPointX, this.centerPointY]
     });
 
-    this.cellsGeometry.setAttribute(
-      'position',
-      explosionMap
-    );
+    this.pieces.forEach(piece => piece.removeFromParent());
+    this.pieces = [];
+
+    explosionMap.forEach(geometry => {
+      const piece = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ wireframe: true }));
+      this.pieces.push(piece);
+      this.add(piece);
+    });
   } 
 }

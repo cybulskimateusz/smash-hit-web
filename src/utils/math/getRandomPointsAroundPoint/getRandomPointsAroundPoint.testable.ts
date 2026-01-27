@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 import getRandomPointsAround from './getRandomPointsAroundPoint';
 
-@Testable({ path: '/utils/getRandomPointsAroundPoint', useOrbitControls: true })
+@Testable({ path: '/utils/math/getRandomPointsAroundPoint', useOrbitControls: true })
 export default class extends THREE.Object3D {
   @Expose({ min: 1, max: 1000, step: 1, folder: 'Settings' })
     amount = 100;
