@@ -3,7 +3,7 @@ import getRandomPointsAroundPoint,
 import getVoronoiCellsFromPoints from '@src/utils/math/getVoronoiCellsFromPoints/getVoronoiCellsFromPoints';
 import * as THREE from 'three';
 
-export interface GetExplosionMapProps extends GetRandomPointsAroundPointProps {
+export interface GetExplosionMap3DProps extends GetRandomPointsAroundPointProps {
     boxSize: THREE.Vector3;
 }
 /**
@@ -18,7 +18,7 @@ export interface GetExplosionMapProps extends GetRandomPointsAroundPointProps {
  *
  * @returns A THREE.ExtrudeGeometry[] of explosion map
  */
-const getExplosionMap3D = (props: GetExplosionMapProps): THREE.ExtrudeGeometry[] => {
+const getExplosionMap3D = (props: GetExplosionMap3DProps): THREE.ExtrudeGeometry[] => {
   const points = getRandomPointsAroundPoint(props);
   const cells = getVoronoiCellsFromPoints(points, {
     width: props.boxSize.x,

@@ -52,8 +52,20 @@ export function getExposedProperties(instance: object): ExposedProperty[] {
 }
 
 export function Testable(p: TestableParams) {
-  return function (ctor: new (app: App) => THREE.Object3D) {
-    const params: TestableParams = { path: p.path, useOrbitControls: !!p.useOrbitControls };
-    window.testableRegistry.push({ params: { ...params, useFbnBackground: !!p.useFbnBackground }, controller: ctor });
+  return function <
+    T extends new (app: App, ...args: never[]) => THREE.Object3D
+  >(ctor: T) {
+    const params: TestableParams = {
+      path: p.path,
+      useOrbitControls: !!p.useOrbitControls,
+    };
+
+    window.testableRegistry.push({
+      params: {
+        ...params,
+        useFbnBackground: !!p.useFbnBackground,
+      },
+      controller: ctor,
+    });
   };
 }
