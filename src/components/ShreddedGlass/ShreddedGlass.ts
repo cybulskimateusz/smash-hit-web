@@ -1,15 +1,29 @@
-import type App from '@src/App/App';
 import type { InteractiveElement } from '@src/App/InteractionHadler';
 import ShreddableModifier from '@src/modifiers/ShreddableModifier/ShreddableModifier';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
+import fragmentShader from './ShreddedGlass.frag';
+import vertexShader from './ShreddedGlass.vert';
+
 class ShreddedGlassMesh extends THREE.Mesh implements InteractiveElement {
-  constructor(private clickHandler: (point: THREE.Vector3) => void) {
+  constructor(
+    private clickHandler: (point: THREE.Vector3) => void,
+  ) {
     super();
+    this.layers.set(1);
 
     this.geometry = new THREE.BoxGeometry(5, 10, 0.2);
-    this.material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    this.material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      depthTest: true,
+      depthWrite: true,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uSceneTexture: { value: window.app.renderer.getBackgroundTexture(1) },
+      }
+    });
 
     autoBind(this);
   }
@@ -21,26 +35,32 @@ class ShreddedGlassMesh extends THREE.Mesh implements InteractiveElement {
 
 class ShreddedGlass extends THREE.Object3D {
   protected mesh: ShreddableModifier;
+  private interactiveMesh: InteractiveElement & THREE.Mesh;
 
-  constructor(private app: App) {
+  constructor() {
     super();
     autoBind(this);
 
-    const interactiveMesh = new ShreddedGlassMesh(this.onClick);
-    this.app.interactionHandler.addElement(interactiveMesh);
+    this.interactiveMesh = new ShreddedGlassMesh(this.onClick);
+    window.app.interactionHandler.addElement(this.interactiveMesh);
 
-    this.mesh = new ShreddableModifier(app, interactiveMesh);
+    this.mesh = new ShreddableModifier(this.interactiveMesh);
     this.add(this.mesh);
+    this.animate();
   }
 
   public onClick(point: THREE.Vector3) {
-    const relativePoint = this.worldToLocal(point.clone());
+    this.mesh.destroyAt(point);
+  }
 
-    this.mesh.destroyAt(relativePoint);
+  public animate() {
+    requestAnimationFrame(this.animate);
+    window.app.world.step();
+    this.mesh.update();
   }
 
   public destroy() {
-    this.app.interactionHandler.removeElement(this);
+    window.app.interactionHandler.removeElement(this);
   }
 
   public reset() {

@@ -3,6 +3,7 @@ import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
 import InteractionHandler from './InteractionHadler';
+import LayeredRenderer from './LayeredRenderer';
 
 export const CAMERA_INITIAL_PROPERTIES = {
   fov: 75,
@@ -11,12 +12,18 @@ export const CAMERA_INITIAL_PROPERTIES = {
   position: new THREE.Vector3(0, 0, 5),
 };
 
+declare global {
+    interface Window {
+        app: App;
+    }
+}
+
 class App {
   private _scene = new THREE.Scene();
   public get scene() { return this._scene; }
   private _camera: THREE.PerspectiveCamera;
   public get camera() { return this._camera; }
-  private _renderer: THREE.WebGLRenderer;
+  private _renderer: LayeredRenderer;
   public get renderer() { return this._renderer; }
   private _world = new RAPIER.World({ x:0, y:-9.81, z:0 });
   public get world() { return this._world; }
@@ -27,6 +34,7 @@ class App {
 
   constructor(canvas: HTMLCanvasElement) {
     autoBind(this);
+    window.app = this;
 
     this._camera = new THREE.PerspectiveCamera(
       CAMERA_INITIAL_PROPERTIES.fov,
@@ -36,11 +44,8 @@ class App {
     );
     this._camera.position.copy(CAMERA_INITIAL_PROPERTIES.position);
 
-    this._renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this._renderer.setSize(window.innerWidth, window.innerHeight);
-    this._renderer.setPixelRatio(window.devicePixelRatio);
+    this._renderer = new LayeredRenderer({ canvas, antialias: true }, 2);
 
-    this.animate();
     this.addEventListeners();
     this._interactionHandler = new InteractionHandler(this);
   }
@@ -48,18 +53,12 @@ class App {
   protected onResize() {
     this._camera.aspect = window.innerWidth / window.innerHeight;
     this._camera.updateProjectionMatrix();
-    this._renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  protected animate() {
-    this.animationFrame = requestAnimationFrame(this.animate);
-    this._renderer.render(this._scene, this._camera);
   }
 
   public destroy() {
     this.removeEventListeners();
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
-    this._renderer.dispose();
+    this._renderer.destroy();
   }
 
   private addEventListeners() {

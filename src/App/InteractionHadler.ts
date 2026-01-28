@@ -30,6 +30,7 @@ class InteractionHandler {
     this.mouse.y = -(event.clientY / innerHeight) * 2 + 1;
 
     this.raycaster.setFromCamera(this.mouse, this.app.camera);
+    this.raycaster.layers.enableAll();
     const intersected = this.raycaster.intersectObjects(this.raycastedElements);
 
     for (const intersection of intersected) {

@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import type App from '@src/App/App';
 import * as THREE from 'three';
 
 interface TestableParams {
@@ -26,7 +25,7 @@ export function resolveTarget(instance: object, path: string): { obj: object; ke
 
 interface TestableRegistryItem {
     params: TestableParams;
-    controller: new (app: App) => THREE.Object3D;
+    controller: new () => THREE.Object3D;
 }
 
 declare global {
@@ -51,21 +50,13 @@ export function getExposedProperties(instance: object): ExposedProperty[] {
   return Reflect.getMetadata(EXPOSED_KEY, instance) || [];
 }
 
-export function Testable(p: TestableParams) {
+export function Testable(params: TestableParams) {
   return function <
-    T extends new (app: App, ...args: never[]) => THREE.Object3D
-  >(ctor: T) {
-    const params: TestableParams = {
-      path: p.path,
-      useOrbitControls: !!p.useOrbitControls,
-    };
-
+    T extends new (...args: never[]) => THREE.Object3D
+  >(controller: T) {
     window.testableRegistry.push({
-      params: {
-        ...params,
-        useFbnBackground: !!p.useFbnBackground,
-      },
-      controller: ctor,
+      params,
+      controller,
     });
   };
 }

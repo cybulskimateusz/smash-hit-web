@@ -55,7 +55,7 @@ if (testable.params.useFbnBackground) {
   app.scene.add(background);
 }
 
-const component = new testable.controller(app);
+const component = new testable.controller();
 app.scene.add(component);
 
 const exposed = getExposedProperties(component);

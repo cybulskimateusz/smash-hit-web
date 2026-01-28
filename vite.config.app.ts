@@ -4,7 +4,7 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
 
-import { viteGlslify } from './plugins/viteGlslify';
+import viteGlslify from './plugins/viteGlslify';
 
 export default defineConfig({
   root: path.resolve(__dirname),

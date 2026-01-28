@@ -1,4 +1,3 @@
-import type App from '@src/App/App';
 import { Expose, Testable } from '@testable/index';
 import * as THREE from 'three';
 
@@ -33,8 +32,8 @@ export default class extends ShreddableModifier {
   @Expose({ folder: 'Triggers' })
     resetMesh = () => this.reset();
 
-  constructor(app: App) {
-    super(app, testedMesh);
+  constructor() {
+    super(testedMesh);
   }
 
   override destroyAt(): void {

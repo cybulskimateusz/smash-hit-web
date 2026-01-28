@@ -1,4 +1,3 @@
-import type App from '@src/App/App';
 import { Expose, Testable } from '@testable/index';
 import * as THREE from 'three';
 
@@ -22,8 +21,8 @@ export default class extends ShreddedGlass {
   @Expose({ folder: 'Triggers' })
     resetMesh = () => this.reset();
 
-  constructor(app: App) {
-    super(app);
+  constructor() {
+    super();
   }
 
   override onClick(position: THREE.Vector3): void {
