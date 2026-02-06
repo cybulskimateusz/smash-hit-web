@@ -32,15 +32,11 @@ class RenderingManager extends THREE.WebGLRenderer {
 
     this.setAnimationLoop(this.animationLoop);
 
-    GlobalUniformsManager.instance.uniforms.set(
-      'gBackgroundSampler',
-      { value: this.backgroundTarget.texture }
-    );
+    GlobalUniformsManager.instance.uniforms.gBackgroundSampler.value = 
+    this.backgroundTarget.texture;
 
-    GlobalUniformsManager.instance.uniforms.set(
-      'gTime',
-      { value: this.clock.getElapsedTime() }
-    );
+    GlobalUniformsManager.instance.uniforms.gTime.value = 
+    this.clock.getElapsedTime();
   }
 
   private animationLoop() {
@@ -50,10 +46,10 @@ class RenderingManager extends THREE.WebGLRenderer {
     }
     if (!this.clock.running) this.clock.running = true;
 
-    const backgroundUniform = GlobalUniformsManager.instance.uniforms.get('gBackgroundSampler');
+    const backgroundUniform = GlobalUniformsManager.instance.uniforms.gBackgroundSampler;
     if (backgroundUniform) backgroundUniform.value = this.backgroundTarget.texture;
 
-    const timeUniform = GlobalUniformsManager.instance.uniforms.get('gTime');
+    const timeUniform = GlobalUniformsManager.instance.uniforms.gTime;
     if (timeUniform) timeUniform.value = this.clock.getElapsedTime();
 
     if (!this.scene) return;

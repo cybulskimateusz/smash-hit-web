@@ -1,6 +1,7 @@
 import MaterialWithGlobalUniforms from '@src/components/EntityWithGlobalUniforms';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
+import GlobalUniformsManager from '@src/managers/GlobalUniformsManager';
 import TestableScene from '@testable/TestableScene';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
@@ -19,10 +20,7 @@ export default class extends TestableScene {
     const entity = this.world.createEntity();
 
     const material = new THREE.ShaderMaterial({
-      uniforms: {
-        gTime: { value: 0 },
-        gBackgroundSampler: { value: null },
-      },
+      uniforms: GlobalUniformsManager.instance.uniforms,
       vertexShader: `
         varying vec2 vUv;
         varying vec3 vNormal;
