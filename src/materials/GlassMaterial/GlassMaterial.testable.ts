@@ -58,17 +58,22 @@ export default class extends TestableScene {
     gui.add(this.params, 'geometry', ['Sphere', 'Box', 'Cylinder', 'Cone', 'Icosahedron'])
       .name('Geometry').onChange(() => this.createTestedEntity());
 
-    const ior = this.material.uniforms.uIndexesOfRefraction.value;
+    const iorRGB = this.material.uniforms.uIndexesOfRefractionRGB.value;
+    const iorCYV = this.material.uniforms.uIndexesOfRefractionCYV.value;
     const refractionFolder = gui.addFolder('Refraction');
-    refractionFolder.add(ior, 'x', 0.0, 2.0, 0.00001).name('R');
-    refractionFolder.add(ior, 'y', 0.0, 2.0, 0.00001).name('G');
-    refractionFolder.add(ior, 'z', 0.0, 2.0, 0.00001).name('B');
+    refractionFolder.add(iorRGB, 'x', 0.0, 2.0, 0.00001).name('R');
+    refractionFolder.add(iorRGB, 'y', 0.0, 2.0, 0.00001).name('G');
+    refractionFolder.add(iorRGB, 'z', 0.0, 2.0, 0.00001).name('B');
+    refractionFolder.add(iorCYV, 'x', 0.0, 2.0, 0.00001).name('C');
+    refractionFolder.add(iorCYV, 'y', 0.0, 2.0, 0.00001).name('Y');
+    refractionFolder.add(iorCYV, 'z', 0.0, 2.0, 0.00001).name('V');
     refractionFolder.open();
 
     const otherUniforms = this.material.uniforms;
     const otherUniformsFolder = gui.addFolder('Other uniforms');
     otherUniformsFolder.add(otherUniforms.uChromaticAberration, 'value', 0, 2, 0.00001).name('Chromatic Abberation');
     otherUniformsFolder.add(otherUniforms.uRefractionPower, 'value', 0, 2, 0.00001).name('Refraction Power');
+    otherUniformsFolder.add(otherUniforms.uSaturation, 'value', 0, 2, 0.00001).name('Saturation');
   }
 
   private spawnBackEntity() {
