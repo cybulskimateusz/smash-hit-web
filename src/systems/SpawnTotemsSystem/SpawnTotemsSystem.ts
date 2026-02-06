@@ -1,4 +1,3 @@
-import Transform from '@src/components/Transform';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
 import * as PREFABS from '@src/prefabs';
@@ -8,7 +7,6 @@ import * as THREE from 'three';
 export default class SpawnTotemsSystem extends System {
   private lastSpawnTime = 0;
   private readonly spawnInterval = 5;
-  private totems: Entity[] = [];
 
   constructor(private camera: THREE.Camera) {
     super();
@@ -22,28 +20,13 @@ export default class SpawnTotemsSystem extends System {
       this.lastSpawnTime = time;
       const z = this.camera.position.z - 10;
 
-      this.totems.push(
-        PREFABS.createSplittableGlass(this.world, {
-          position: new THREE.Vector3(5, 0, z)
-        }),
-        PREFABS.createSplittableGlass(this.world, {
-          position: new THREE.Vector3(-5, 0, z)
-        })
-      );
+      PREFABS.createSplittableGlass(this.world, {
+        position: new THREE.Vector3(5, 0, z)
+      });
+      PREFABS.createSplittableGlass(this.world, {
+        position: new THREE.Vector3(-5, 0, z)
+      });
     }
-
-    this.destroyEntitiesBehind();
-  }
-
-  destroyEntitiesBehind() {
-    this.totems.forEach(entity => {
-      const transform = entity.get(Transform);
-      if (!transform) return;
-
-      if (transform.position.z > this.camera.position.z) {
-        this.world.destroyEntity(entity);
-      }
-    });
   }
 
   onEntityRemoved(_entity: Entity): void {}

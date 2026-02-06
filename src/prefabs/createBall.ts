@@ -1,4 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
+import Dynamic from '@src/components/Dynamic';
 import * as THREE from 'three';
 
 import Collider from '../components/Collider';
@@ -26,11 +27,9 @@ export default function createBall(
 
   const entity = world.createEntity();
 
-  // Transform component
   const transform = new Transform();
   transform.position.copy(position);
 
-  // ThreeMesh component
   const geometry = new THREE.SphereGeometry(radius, 16, 16);
   const material = new THREE.MeshStandardMaterial({ color });
   const mesh = new THREE.Mesh(geometry, material);
@@ -39,11 +38,9 @@ export default function createBall(
   const threeMesh = new ThreeMesh();
   threeMesh.mesh = mesh;
 
-  // RigidBody component
   const rigidBody = new RigidBody();
   rigidBody.desc = RAPIER.RigidBodyDesc.dynamic();
 
-  // Collider component
   const collider = new Collider();
   collider.desc = RAPIER.ColliderDesc.ball(radius);
 
@@ -51,7 +48,8 @@ export default function createBall(
     .add(transform)
     .add(threeMesh)
     .add(rigidBody)
-    .add(collider);
+    .add(collider)
+    .add(new Dynamic());
 
   return entity;
 }

@@ -1,4 +1,5 @@
 import Debrie from '@src/components/Debrie'; 
+import Dynamic from '@src/components/Dynamic';
 import MeshSplitter from '@src/components/MeshSplitter';
 import ThreeObject from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
@@ -75,7 +76,11 @@ class MeshSplitterSystem extends System {
       transform.position.copy(pieceMesh.mesh.position);
 
       const pieceEntity = this.world.createEntity();
-      pieceEntity.add(transform).add(pieceMesh).add(new Debrie());
+      pieceEntity
+        .add(transform)
+        .add(pieceMesh)
+        .add(new Debrie())
+        .add(new Dynamic());
       return pieceEntity;
     }).filter(Boolean);
 

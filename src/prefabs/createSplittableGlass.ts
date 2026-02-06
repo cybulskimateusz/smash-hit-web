@@ -1,4 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
+import Dynamic from '@src/components/Dynamic';
 import GlassMaterial from '@src/materials/GlassMaterial/GlassMaterial';
 import * as THREE from 'three';
 
@@ -28,7 +29,7 @@ export default function createSplittableGlass(
     position = new THREE.Vector3(0, 0, -2),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
-    geometry = new THREE.IcosahedronGeometry(2, 1),
+    geometry = new THREE.SphereGeometry(1.5, 32, 32),
     material = new GlassMaterial(),
     splitAmount = 15,
   } = options;
@@ -70,7 +71,8 @@ export default function createSplittableGlass(
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
-    .add(meshSplitter);
+    .add(meshSplitter)
+    .add(new Dynamic());
 
   return entity;
 }
