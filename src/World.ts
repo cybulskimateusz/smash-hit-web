@@ -22,10 +22,12 @@ class World {
     );
   }
   
-  addSystem(system: System): void {
+  addSystem(system: System): World {
     system.world = this;
     this.systems.push(system);
     system.init?.();
+
+    return this;
   }
   
   update(): void {

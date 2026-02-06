@@ -1,25 +1,26 @@
-import GameScene from '../components/GameScene';
-import { createBall, createSplittableGlass } from '../prefabs';
-import MeshSplitterOnCollisionSystem from '../systems/MeshSplitterOnCollisionSystem/MeshSplitterOnCollisionSystem';
-import MeshSplitterSystem from '../systems/MeshSplitterSystem/MeshSplitterSystem';
-import PhysicsDebrisSystem from '../systems/PhysicsDebrisSystem/PhysicsDebrisSystem';
-import PhysicsSystem from '../systems/PhysicsSystem';
-import RenderSystem from '../systems/RenderSystem';
-import type World from '../World';
+import GameScene from '@src/components/GameScene';
+import * as PREFABS from '@src/prefabs';
+import GlobalUniformsMaterialsSystem from '@src/systems/GlobalUniformsMaterialsSystem/GlobalUniformsMaterialsSystem';
+import MeshSplitterOnCollisionSystem from '@src/systems/MeshSplitterOnCollisionSystem/MeshSplitterOnCollisionSystem';
+import MeshSplitterSystem from '@src/systems/MeshSplitterSystem/MeshSplitterSystem';
+import PhysicsDebrisSystem from '@src/systems/PhysicsDebrisSystem/PhysicsDebrisSystem';
+import PhysicsSystem from '@src/systems/PhysicsSystem';
+import RenderSystem from '@src/systems/RenderSystem';
 
 class MainScene extends GameScene {
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
+  init(): void {
+    this.world
+      .addSystem(new RenderSystem(this))
+      .addSystem(new PhysicsSystem())
+      .addSystem(new MeshSplitterSystem())
+      .addSystem(new MeshSplitterOnCollisionSystem())
+      .addSystem(new PhysicsDebrisSystem())
+      .addSystem(new GlobalUniformsMaterialsSystem());
 
-    world.addSystem(new RenderSystem(this));
-    world.addSystem(new PhysicsSystem());
-    world.addSystem(new MeshSplitterSystem());
-    world.addSystem(new MeshSplitterOnCollisionSystem());
-    world.addSystem(new PhysicsDebrisSystem());
+    PREFABS.createFloor(this.world);
+    PREFABS.createSplittableGlass(this.world);
 
-    createSplittableGlass(world);
-
-    setTimeout(() => createBall(world), 1000);
+    setTimeout(() => PREFABS.createBall(this.world), 1000);
 
     this.camera.position.set(0, 0, 5);
   }

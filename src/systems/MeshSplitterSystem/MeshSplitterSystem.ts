@@ -1,14 +1,13 @@
 import Debrie from '@src/components/Debrie'; 
+import MeshSplitter from '@src/components/MeshSplitter';
+import ThreeObject from '@src/components/ThreeMesh';
+import Transform from '@src/components/Transform';
+import type Entity from '@src/Entity';
+import System from '@src/System';
 import getExplosionMap3D from '@src/utils/three/getExplosionMap3D/getExplosionMap3D';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
-
-import MeshSplitter from '../../components/MeshSplitter';
-import ThreeObject from '../../components/ThreeMesh';
-import Transform from '../../components/Transform';
-import type Entity from '../../Entity';
-import System from '../../System';
 
 class MeshSplitterSystem extends System {
   private csgEvaluator = new Evaluator();
@@ -24,7 +23,6 @@ class MeshSplitterSystem extends System {
 
     const threeMesh = entity.get(ThreeObject);
     if (!threeMesh || !meshSplitter) return;
-    console.log(threeMesh);
 
     const mesh = threeMesh.mesh;
 
@@ -53,7 +51,11 @@ class MeshSplitterSystem extends System {
       cellBrush.position.copy(cellCenter);
       cellBrush.updateMatrixWorld();
 
+      // MeshBVH: "maxLeafTris" option has been deprecated. - the warn does not affect the effect
+      const originalWarn = console.warn;
+      console.warn = () => {};
       const result = this.csgEvaluator.evaluate(sourceBrush, cellBrush, INTERSECTION);
+      console.warn = originalWarn;
 
       result.geometry.computeBoundingBox();
       const pieceCenter = result.geometry.boundingBox!.getCenter(new THREE.Vector3());

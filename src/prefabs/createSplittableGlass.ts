@@ -1,4 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
+import GlassMaterial from '@src/materials/GlassMaterial/GlassMaterial';
 import * as THREE from 'three';
 
 import Collider from '../components/Collider';
@@ -19,26 +20,16 @@ export interface SplittableGlassOptions {
   isStatic?: boolean;
 }
 
-/**
- * Creates a glass-like entity that shatters into debris on collision.
- *
- * Components added:
- * - Transform: Position, rotation, scale
- * - ThreeMesh: Visual representation
- * - RigidBody: Physics body (static or dynamic)
- * - Collider: Collision detection with active events
- * - MeshSplitter: Handles splitting into debris pieces
- */
 export default function createSplittableGlass(
   world: World,
   options: SplittableGlassOptions = {}
 ): Entity {
   const {
-    position = new THREE.Vector3(0, 0, 0),
+    position = new THREE.Vector3(0, 0, -2),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
-    geometry = new THREE.BoxGeometry(2, 3, 0.1),
-    material = new THREE.MeshNormalMaterial(),
+    geometry = new THREE.IcosahedronGeometry(2, 1),
+    material = new GlassMaterial(),
     splitAmount = 15,
   } = options;
 
@@ -53,8 +44,10 @@ export default function createSplittableGlass(
   mesh.position.copy(position);
   mesh.rotation.copy(rotation);
   mesh.scale.copy(scale);
+  mesh.layers.set(1);
 
   const threeMesh = new ThreeMesh();
+  threeMesh.usesGlobalUniforms = true;
   threeMesh.mesh = mesh;
 
   const rigidBody = new RigidBody();

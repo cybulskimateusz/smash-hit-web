@@ -14,15 +14,6 @@ export interface BallOptions {
   color?: number;
 }
 
-/**
- * Creates a ball entity that can be used as a projectile.
- *
- * Components added:
- * - Transform: Position
- * - ThreeMesh: Sphere visual
- * - RigidBody: Dynamic physics body
- * - Collider: Sphere collider
- */
 export default function createBall(
   world: World,
   options: BallOptions = {}

@@ -8,7 +8,7 @@
     "testable": "vite --config vite.config.testable.ts",
     "sandbox": "vite --config vite.config.sandbox.ts",
     "test": "jest",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --config vite.config.app.ts",
     "preview": "vite preview",
     "prepare": "husky"
   },

@@ -1,4 +1,5 @@
-export type { BallOptions } from './Ball';
-export { default as createBall } from './Ball';
-export type { SplittableGlassOptions } from './SplittableGlass';
-export { default as createSplittableGlass } from './SplittableGlass';
+export type { BallOptions } from './createBall';
+export { default as createBall } from './createBall';
+export { default as createFloor } from './createFloor';
+export type { SplittableGlassOptions } from './createSplittableGlass';
+export { default as createSplittableGlass } from './createSplittableGlass';
