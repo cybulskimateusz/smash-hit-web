@@ -13,7 +13,7 @@ import MeshSplitterOnCollisionSystem from './MeshSplitterOnCollisionSystem';
 
 export default class extends TestableScene {
   static path = '/systems/MeshSplitterOnCollisionSystem';
-  
+
   private physicsSystem!: PhysicsSystem;
   private currentEntity?: Entity;
   private params = {
@@ -21,7 +21,6 @@ export default class extends TestableScene {
     ballSpeed: 50,
   };
   private pieces: Entity[] = [];
-  private animationFrame?: ReturnType<typeof requestAnimationFrame>;
 
   init(): void {
     this.physicsSystem = new PhysicsSystem();
@@ -41,7 +40,7 @@ export default class extends TestableScene {
   }
 
   private update() {
-    this.animationFrame = requestAnimationFrame(this.update);
+    requestAnimationFrame(this.update);
     const meshSplitter = this.currentEntity?.get(MeshSplitter);
     if (!meshSplitter || !meshSplitter.debris.length || !meshSplitter.isSplitted) return;
     const center = meshSplitter.center.clone();

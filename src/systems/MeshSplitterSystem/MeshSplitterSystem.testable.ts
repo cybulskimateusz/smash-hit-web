@@ -27,8 +27,6 @@ export default class extends TestableScene {
     explosionStrength: 0.0001,
   };
 
-  private animationFrame?: ReturnType<typeof requestAnimationFrame>;
-
   init() {
     this.world.addSystem(new RenderSystem(this));
     this.world.addSystem(new MeshSplitterSystem());
@@ -41,7 +39,6 @@ export default class extends TestableScene {
   }
 
   private update() {
-    this.animationFrame = requestAnimationFrame(this.update);
     const meshSplitter = this.currentEntity?.get(MeshSplitter);
     if (!meshSplitter || !meshSplitter.debris.length) return;
      
