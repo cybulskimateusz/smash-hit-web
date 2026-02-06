@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --config vite.config.app.ts",
     "testable": "vite --config vite.config.testable.ts",
+    "sandbox": "vite --config vite.config.sandbox.ts",
     "test": "jest",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -50,6 +51,7 @@
     "glslify": "^7.1.1",
     "gsap": "^3.14.2",
     "reflect-metadata": "^0.2.2",
-    "three": "^0.182.0"
+    "three": "^0.182.0",
+    "three-bvh-csg": "^0.0.17"
   }
 }

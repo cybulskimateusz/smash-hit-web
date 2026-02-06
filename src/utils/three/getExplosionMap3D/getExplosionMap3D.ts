@@ -38,6 +38,8 @@ const getExplosionMap3D = (props: GetExplosionMap3DProps): THREE.ExtrudeGeometry
       depth: props.boxSize.z,
       bevelEnabled: false
     });
+    // Center the geometry in z to match source mesh
+    geometry.translate(0, 0, -props.boxSize.z / 2);
 
     geometries.push(geometry);
   }

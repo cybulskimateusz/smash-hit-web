@@ -1,61 +1,69 @@
-import type App from '@src/App/App';
-import { Expose, Testable } from '@testable/index';
+import type World from '@src/World';
+import { Testable } from '@testable/index';
+import TestableScene from '@testable/TestableScene';
+import { GUI } from 'dat.gui';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import getExplosionMap from './getExplosionMap';
 
-@Testable({ path: '/utils/three/getExplosionMap', useOrbitControls: true })
-export default class extends THREE.Object3D {
-  @Expose({ min: 3, max: 200, step: 1, folder: 'Settings' })
-    pointsAmount = 128;
+@Testable('/utils/three/getExplosionMap')
+export default class extends TestableScene {
+  private lines!: THREE.LineSegments;
+  private geometry = new THREE.BufferGeometry();
+  private params = {
+    amount: 128,
+    outerRadius: 0.5,
+    innerRadius: 0,
+    planeWidth: 5,
+    planeHeight: 5,
+    centerX: 0,
+    centerY: 0,
+  };
 
-  @Expose({ min: 0.5, max: 10, step: 0.1, folder: 'Settings' })
-    planeWidth = 1;
+  constructor(world: World, canvas: HTMLCanvasElement) {
+    super(world, canvas);
 
-  @Expose({ min: 0.5, max: 10, step: 0.1, folder: 'Settings' })
-    planeHeight = 1;
+    new OrbitControls(this.camera, canvas);
 
-  @Expose({ min: 0.0, max: 10, step: 0.1, folder: 'Settings' })
-    outerRadius = 0.07;
+    const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this.lines = new THREE.LineSegments(this.geometry, material);
+    this.add(this.lines);
 
-  @Expose({ min: 0.0, max: 10, step: 0.1, folder: 'Settings' })
-    innerRadius = 0;
-
-  @Expose({ min: -5, max: 5, step: 0.0001, folder: 'Settings' })
-    centerPointX = 0;
-
-  @Expose({ min: -5, max: 5, step: 0.0001, folder: 'Settings' })
-    centerPointY = 0;
-
-  @Expose({ folder: 'Settings' })
-    regenerate = () => this.generate();
-
-  private cellsLine: THREE.LineSegments;
-  private cellsGeometry: THREE.BufferGeometry;
-
-  constructor(_app: App) {
-    super();
-
-    this.cellsGeometry = new THREE.BufferGeometry();
-    const cellsMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-    this.cellsLine = new THREE.LineSegments(this.cellsGeometry, cellsMaterial);
-    this.add(this.cellsLine);
-
+    this.setupGUI();
     this.generate();
+
+    this.camera.position.set(0, 0, 10);
+  }
+
+  private setupGUI() {
+    const gui = new GUI();
+    const settings = gui.addFolder('Settings');
+    settings.add(this.params, 'amount', 3, 200, 1).onChange(() => this.generate());
+    settings.add(this.params, 'outerRadius', 0, 10, 0.1).onChange(() => this.generate());
+    settings.add(this.params, 'innerRadius', 0, 10, 0.1).onChange(() => this.generate());
+    settings.open();
+
+    const plane = gui.addFolder('Plane');
+    plane.add(this.params, 'planeWidth', 0.5, 10, 0.1).onChange(() => this.generate());
+    plane.add(this.params, 'planeHeight', 0.5, 10, 0.1).onChange(() => this.generate());
+    plane.open();
+
+    const center = gui.addFolder('Center');
+    center.add(this.params, 'centerX', -5, 5, 0.01).onChange(() => this.generate());
+    center.add(this.params, 'centerY', -5, 5, 0.01).onChange(() => this.generate());
+    center.open();
+
+    gui.add({ regenerate: () => this.generate() }, 'regenerate');
   }
 
   private generate() {
-    const explosionMap = getExplosionMap({
-      amount: this.pointsAmount,
-      outerRadius: this.outerRadius,
-      innerRadius: this.innerRadius,
-      planeSize: { width:this.planeWidth, height: this.planeHeight },
-      center: [this.centerPointX, this.centerPointY]
-    });
-
-    this.cellsGeometry.setAttribute(
-      'position',
-      explosionMap
-    );
-  } 
+    this.geometry.setAttribute('position', getExplosionMap({
+      amount: this.params.amount,
+      outerRadius: this.params.outerRadius,
+      innerRadius: this.params.innerRadius,
+      planeSize: { width: this.params.planeWidth, height: this.params.planeHeight },
+      center: [this.params.centerX, this.params.centerY]
+    }));
+  }
 }

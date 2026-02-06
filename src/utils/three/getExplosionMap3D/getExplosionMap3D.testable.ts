@@ -1,62 +1,75 @@
-import type App from '@src/App/App';
-import { Expose, Testable } from '@testable/index';
+import type World from '@src/World';
+import { Testable } from '@testable/index';
+import TestableScene from '@testable/TestableScene';
+import { GUI } from 'dat.gui';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import getExplosionMap from './getExplosionMap3D';
+import getExplosionMap3D from './getExplosionMap3D';
 
-@Testable({ path: '/utils/three/getExplosionMap3D', useOrbitControls: true })
-export default class extends THREE.Object3D {
-  @Expose({ min: 3, max: 200, step: 1, folder: 'Settings' })
-    pointsAmount = 128;
-
-  @Expose({ min: 1, max: 10, step: 0.01, folder: 'Box' })
-    boxWidth = 5;
-
-  @Expose({ min: 1, max: 10, step: 0.01, folder: 'Box' })
-    boxHeight = 5;
-
-  @Expose({ min: 0.5, max: 10, step: 0.01, folder: 'Box' })
-    boxDepth = 0.2;
-
-  @Expose({ min: 0.0, max: 10, step: 0.1, folder: 'Settings' })
-    outerRadius = 0.07;
-
-  @Expose({ min: 0.0, max: 10, step: 0.1, folder: 'Settings' })
-    innerRadius = 0;
-
-  @Expose({ min: -5, max: 5, step: 0.0001, folder: 'Settings' })
-    centerPointX = 0;
-
-  @Expose({ min: -5, max: 5, step: 0.0001, folder: 'Settings' })
-    centerPointY = 0;
-
-  @Expose({ folder: 'refresh' })
-    regenerate = () => this.generate();
-
+@Testable('/utils/three/getExplosionMap3D')
+export default class extends TestableScene {
   private pieces: THREE.Mesh[] = [];
+  private params = {
+    pointsAmount: 128,
+    outerRadius: 1.4,
+    innerRadius: 0,
+    boxWidth: 5,
+    boxHeight: 5,
+    boxDepth: 0.2,
+    centerPointX: 0,
+    centerPointY: 0,
+  };
 
-  constructor(_app: App) {
-    super();
+  constructor(world: World, canvas: HTMLCanvasElement) {
+    super(world, canvas);
 
+    new OrbitControls(this.camera, canvas);
+    this.setupGUI();
     this.generate();
+
+    this.camera.position.set(0, 0, 10);
+  }
+
+  private setupGUI() {
+    const gui = new GUI();
+
+    const settings = gui.addFolder('Settings');
+    settings.add(this.params, 'pointsAmount', 3, 200, 1).onChange(() => this.generate());
+    settings.add(this.params, 'outerRadius', 0, 10, 0.1).onChange(() => this.generate());
+    settings.add(this.params, 'innerRadius', 0, 10, 0.1).onChange(() => this.generate());
+    settings.open();
+
+    const box = gui.addFolder('Box');
+    box.add(this.params, 'boxWidth', 1, 10, 0.1).onChange(() => this.generate());
+    box.add(this.params, 'boxHeight', 1, 10, 0.1).onChange(() => this.generate());
+    box.add(this.params, 'boxDepth', 0.1, 5, 0.1).onChange(() => this.generate());
+    box.open();
+
+    const center = gui.addFolder('Center');
+    center.add(this.params, 'centerPointX', -5, 5, 0.01).onChange(() => this.generate());
+    center.add(this.params, 'centerPointY', -5, 5, 0.01).onChange(() => this.generate());
+    center.open();
+
+    gui.add({ regenerate: () => this.generate() }, 'regenerate');
   }
 
   private generate() {
-    const explosionMap = getExplosionMap({
-      amount: this.pointsAmount,
-      outerRadius: this.outerRadius,
-      innerRadius: this.innerRadius,
-      boxSize: new THREE.Vector3(this.boxWidth, this.boxHeight, this.boxDepth),
-      center: [this.centerPointX, this.centerPointY]
-    });
-
     this.pieces.forEach(piece => piece.removeFromParent());
     this.pieces = [];
 
-    explosionMap.forEach(geometry => {
-      const piece = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ wireframe: true }));
+    const geometries = getExplosionMap3D({
+      amount: this.params.pointsAmount,
+      outerRadius: this.params.outerRadius,
+      innerRadius: this.params.innerRadius,
+      boxSize: new THREE.Vector3(this.params.boxWidth, this.params.boxHeight, this.params.boxDepth),
+      center: [this.params.centerPointX, this.params.centerPointY]
+    });
+
+    geometries.forEach(geometry => {
+      const piece = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({ wireframe: true }));
       this.pieces.push(piece);
       this.add(piece);
     });
-  } 
+  }
 }

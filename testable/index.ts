@@ -1,19 +1,8 @@
 import 'reflect-metadata';
 
-import * as THREE from 'three';
+import type World from '@src/World';
 
-interface TestableParams {
-    path: string;
-    useOrbitControls?: boolean;
-    useFbnBackground?: boolean;
-}
-
-export interface ExposeOptions {
-    min?: number; max?: number; step?: number; folder?: string; target?: string;
-    name?: string; listen?: boolean; color?: boolean; options?: string[] | number[] | Record<string, unknown>;
-}
-
-export interface ExposedProperty { key: string; options: ExposeOptions }
+import type TestableScene from './TestableScene';
 
 export function resolveTarget(instance: object, path: string): { obj: object; key: string } {
   const parts = path.split('.');
@@ -24,8 +13,8 @@ export function resolveTarget(instance: object, path: string): { obj: object; ke
 }
 
 interface TestableRegistryItem {
-    params: TestableParams;
-    controller: new () => THREE.Object3D;
+    path: string;
+    controller: new (world: World, canvas: HTMLCanvasElement) => TestableScene;
 }
 
 declare global {
@@ -36,26 +25,12 @@ declare global {
 
 window.testableRegistry = window.testableRegistry || [];
 
-const EXPOSED_KEY = Symbol('exposed');
-
-export function Expose(options: ExposeOptions = {}) {
-  return function (target: object, propertyKey: string) {
-    const existing: ExposedProperty[] = Reflect.getMetadata(EXPOSED_KEY, target) || [];
-    existing.push({ key: propertyKey, options });
-    Reflect.defineMetadata(EXPOSED_KEY, existing, target);
-  };
-}
-
-export function getExposedProperties(instance: object): ExposedProperty[] {
-  return Reflect.getMetadata(EXPOSED_KEY, instance) || [];
-}
-
-export function Testable(params: TestableParams) {
+export function Testable(path: string) {
   return function <
-    T extends new (...args: never[]) => THREE.Object3D
+    T extends new (world: World, canvas: HTMLCanvasElement) => TestableScene
   >(controller: T) {
     window.testableRegistry.push({
-      params,
+      path,
       controller,
     });
   };

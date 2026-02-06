@@ -1,0 +1,1 @@
+declare type EntityComponentType<T> = new (...args: unknown[]) => T;
