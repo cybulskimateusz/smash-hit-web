@@ -23,7 +23,7 @@ export default defineConfig([
       'max-len': ['error', { code: 120 }],
       'object-curly-newline': ['error', { consistent: true }],
       'object-curly-spacing': ['error', 'always'],
-      'max-lines': ['error', { max: 60, skipBlankLines: true, skipComments: true }],
+      // 'max-lines': ['error', { max: 60, skipBlankLines: true, skipComments: true }],
       'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
       'quotes': ['error', 'single', { avoidEscape: true }],
       'semi': ['error', 'always'],

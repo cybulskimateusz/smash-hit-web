@@ -1,6 +1,7 @@
 import './style.css';
 
-import App from './App/App';
+import Game from './Game';
+import MainScene from './scenes/MainScene';
 
 const canvas = document.querySelector('#app') as HTMLCanvasElement;
-new App(canvas);
+new Game(canvas, MainScene);

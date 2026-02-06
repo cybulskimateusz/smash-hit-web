@@ -1,56 +1,57 @@
-import type App from '@src/App/App';
-import { Expose, Testable } from '@testable/index';
+import TestableScene from '@testable/TestableScene';
+import { GUI } from 'dat.gui';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import getRandomPointsAround from './getRandomPointsAround';
 
-@Testable({ path: '/utils/getRandomPointsAround', useOrbitControls: true })
-export default class extends THREE.Object3D {
-  @Expose({ min: 1, max: 1000, step: 1, folder: 'Settings' })
-    amount = 100;
+export default class extends TestableScene {
+  static path = '/utils/math/getRandomPointsAround';
 
-  @Expose({ min: 0.1, max: 5, step: 0.1, folder: 'Settings' })
-    outerRadius = 2;
+  private pointsMesh!: THREE.Points;
+  private geometry = new THREE.BufferGeometry();
+  private params = {
+    amount: 100,
+    outerRadius: 2,
+    innerRadius: 0.5,
+  };
 
-  @Expose({ min: 0, max: 4, step: 0.1, folder: 'Settings' })
-    innerRadius = 0.5;
+  init() {
+    new OrbitControls(this.camera, this.canvas);
 
-  @Expose({ folder: 'Settings' })
-    regenerate = () => this.generatePoints();
-
-  private pointsMesh: THREE.Points;
-  private geometry: THREE.BufferGeometry;
-
-  constructor(_app: App) {
-    super();
-
-    this.geometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({
-      color: 0x00ffff,
-      size: 0.05,
-      sizeAttenuation: true,
-    });
-
+    const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.05 });
     this.pointsMesh = new THREE.Points(this.geometry, material);
     this.add(this.pointsMesh);
 
-    this.generatePoints();
+    this.setupGUI();
+    this.generate();
+
+    this.camera.position.set(0, 0, 5);
   }
 
-  private generatePoints() {
+  private setupGUI() {
+    const gui = new GUI();
+    const settings = gui.addFolder('Settings');
+    settings.add(this.params, 'amount', 1, 1000, 1).onChange(() => this.generate());
+    settings.add(this.params, 'outerRadius', 0.1, 5, 0.1).onChange(() => this.generate());
+    settings.add(this.params, 'innerRadius', 0, 4, 0.1).onChange(() => this.generate());
+    settings.open();
+    gui.add({ regenerate: () => this.generate() }, 'regenerate');
+  }
+
+  private generate() {
     const points = getRandomPointsAround({
-      amount: this.amount,
-      outerRadius: this.outerRadius,
-      innerRadius: this.innerRadius,
+      amount: this.params.amount,
+      outerRadius: this.params.outerRadius,
+      innerRadius: this.params.innerRadius,
     });
+
     const positions = new Float32Array(points.length * 3);
-
     for (let i = 0; i < points.length; i++) {
-      positions[i * 3] = points[i][0]; // position X
-      positions[i * 3 + 1] = points[i][1]; // position y
-      positions[i * 3 + 2] = 0; // position z
+      positions[i * 3] = points[i][0];
+      positions[i * 3 + 1] = points[i][1];
+      positions[i * 3 + 2] = 0;
     }
-
     this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   }
 }
