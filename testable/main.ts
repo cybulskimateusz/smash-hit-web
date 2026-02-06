@@ -1,10 +1,12 @@
 import './style.css';
 
 import Game from '@src/Game';
+import { registerTestables } from '@testable/index';
 import { GUI } from 'dat.gui';
 
-// import all testable files
-import.meta.glob('@src/**/*.testable.ts', { eager: true });
+// import all testable files and register them
+const testableModules = import.meta.glob('@src/**/*.testable.ts', { eager: true });
+registerTestables(testableModules);
 
 const canvas = document.querySelector('#app') as HTMLCanvasElement;
 const pathname = window.location.pathname;

@@ -1,5 +1,3 @@
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
@@ -7,8 +5,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import getRandomPointsAround from './getRandomPointsAround';
 
-@Testable('/utils/math/getRandomPointsAround')
 export default class extends TestableScene {
+  static path = '/utils/math/getRandomPointsAround';
+
   private pointsMesh!: THREE.Points;
   private geometry = new THREE.BufferGeometry();
   private params = {
@@ -17,10 +16,8 @@ export default class extends TestableScene {
     innerRadius: 0.5,
   };
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-
-    new OrbitControls(this.camera, canvas);
+  init() {
+    new OrbitControls(this.camera, this.canvas);
 
     const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.05 });
     this.pointsMesh = new THREE.Points(this.geometry, material);

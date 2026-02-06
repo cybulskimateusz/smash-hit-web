@@ -1,8 +1,6 @@
-import 'reflect-metadata';
-
 import type World from '@src/World';
 
-import type TestableScene from './TestableScene';
+import TestableScene from './TestableScene';
 
 export function resolveTarget(instance: object, path: string): { obj: object; key: string } {
   const parts = path.split('.');
@@ -12,26 +10,46 @@ export function resolveTarget(instance: object, path: string): { obj: object; ke
   return { obj: obj as object, key };
 }
 
-interface TestableRegistryItem {
-    path: string;
-    controller: new (world: World, canvas: HTMLCanvasElement) => TestableScene;
+export interface TestableClass {
+  new (world: World, canvas: HTMLCanvasElement): TestableScene;
+  path: string;
+}
+
+export interface TestableRegistryItem {
+  path: string;
+  controller: TestableClass;
 }
 
 declare global {
-    interface Window {
-        testableRegistry: TestableRegistryItem[];
-    }
+  interface Window {
+    testableRegistry: TestableRegistryItem[];
+  }
 }
 
 window.testableRegistry = window.testableRegistry || [];
 
-export function Testable(path: string) {
-  return function <
-    T extends new (world: World, canvas: HTMLCanvasElement) => TestableScene
-  >(controller: T) {
+export function registerTestables(modules: Record<string, unknown>) {
+  for (const [filePath, module] of Object.entries(modules)) {
+    const exports = module as { default?: unknown };
+    const Controller = exports.default;
+
+    if (!Controller || typeof Controller !== 'function') {
+      throw new Error(`Testable file ${filePath} must have a default export`);
+    }
+
+    if (!(Controller.prototype instanceof TestableScene)) {
+      throw new Error(`Testable ${filePath} must extend TestableScene`);
+    }
+
+    const TestableController = Controller as TestableClass;
+
+    if (!TestableController.path) {
+      throw new Error(`Testable ${filePath} must define static path property`);
+    }
+
     window.testableRegistry.push({
-      path,
-      controller,
+      path: TestableController.path,
+      controller: TestableController,
     });
-  };
+  }
 }

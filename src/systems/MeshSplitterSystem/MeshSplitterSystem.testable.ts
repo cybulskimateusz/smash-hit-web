@@ -2,10 +2,7 @@ import MeshSplitter from '@src/components/MeshSplitter';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/Entity';
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
-import autoBind from 'auto-bind';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
@@ -15,8 +12,9 @@ import MeshSplitterSystem from './MeshSplitterSystem';
 
 type GeometryType = 'Sphere' | 'Box' | 'Cylinder' | 'Cone' | 'Icosahedron';
 
-@Testable('/systems/MeshSplitterSystem')
 export default class extends TestableScene {
+  static path = '/systems/MeshSplitterSystem';
+
   private currentEntity?: Entity;
   private pieces: Entity[] = [];
   private params = {
@@ -31,16 +29,13 @@ export default class extends TestableScene {
 
   private animationFrame?: ReturnType<typeof requestAnimationFrame>;
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-    autoBind(this);
-
+  init() {
     this.world.addSystem(new RenderSystem(this));
     this.world.addSystem(new MeshSplitterSystem());
     this.createTestedEntity();
     this.createGUI();
 
-    new OrbitControls(this.camera, canvas);
+    new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 10);
     this.update();
   }

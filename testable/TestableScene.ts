@@ -10,11 +10,14 @@ import type World from '@src/World';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
-class TestableScene extends GameScene {
+abstract class TestableScene extends GameScene {
+  static path: string;
+  
   constructor(world: World, canvas: HTMLCanvasElement) {
     super(world, canvas);
     autoBind(this);
   }
+  
   protected  spawnFloor(): Entity {
     const entity = this.world.createEntity();
     const floorMesh = new THREE.Mesh(

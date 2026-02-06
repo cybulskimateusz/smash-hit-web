@@ -1,5 +1,3 @@
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
@@ -7,8 +5,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import getExplosionMap from './getExplosionMap';
 
-@Testable('/utils/three/getExplosionMap')
 export default class extends TestableScene {
+  static path = '/utils/three/getExplosionMap';
+
   private lines!: THREE.LineSegments;
   private geometry = new THREE.BufferGeometry();
   private params = {
@@ -21,10 +20,8 @@ export default class extends TestableScene {
     centerY: 0,
   };
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-
-    new OrbitControls(this.camera, canvas);
+  init() {
+    new OrbitControls(this.camera, this.canvas);
 
     const material = new THREE.LineBasicMaterial({ color: 0xffffff });
     this.lines = new THREE.LineSegments(this.geometry, material);

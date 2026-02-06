@@ -7,7 +7,10 @@ abstract class GameScene extends THREE.Scene {
   constructor(protected world: World, protected canvas: HTMLCanvasElement) {
     super();
     this.addEventListeners();
+    queueMicrotask(() => this.init());
   }
+
+  abstract init(): void;
 
   private addEventListeners() {
     window.addEventListener('resize', this.onResize);

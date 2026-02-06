@@ -1,5 +1,3 @@
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
@@ -7,8 +5,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import getExplosionMap3D from './getExplosionMap3D';
 
-@Testable('/utils/three/getExplosionMap3D')
 export default class extends TestableScene {
+  static path = '/utils/three/getExplosionMap3D';
+
   private pieces: THREE.Mesh[] = [];
   private params = {
     pointsAmount: 128,
@@ -21,10 +20,8 @@ export default class extends TestableScene {
     centerPointY: 0,
   };
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-
-    new OrbitControls(this.camera, canvas);
+  init() {
+    new OrbitControls(this.camera, this.canvas);
     this.setupGUI();
     this.generate();
 

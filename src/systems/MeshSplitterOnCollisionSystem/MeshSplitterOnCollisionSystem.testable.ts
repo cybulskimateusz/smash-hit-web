@@ -1,10 +1,7 @@
 import MeshSplitter from '@src/components/MeshSplitter';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/Entity';
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
-import autoBind from 'auto-bind';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
@@ -14,8 +11,9 @@ import PhysicsSystem from '../PhysicsSystem';
 import RenderSystem from '../RenderSystem';
 import MeshSplitterOnCollisionSystem from './MeshSplitterOnCollisionSystem';
 
-@Testable('/systems/MeshSplitterOnCollisionSystem')
 export default class extends TestableScene {
+  static path = '/systems/MeshSplitterOnCollisionSystem';
+  
   private physicsSystem!: PhysicsSystem;
   private currentEntity?: Entity;
   private params = {
@@ -25,10 +23,7 @@ export default class extends TestableScene {
   private pieces: Entity[] = [];
   private animationFrame?: ReturnType<typeof requestAnimationFrame>;
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-    autoBind(this);
-
+  init(): void {
     this.physicsSystem = new PhysicsSystem();
     this.world.addSystem(this.physicsSystem);
     this.world.addSystem(new MeshSplitterSystem());
@@ -38,7 +33,7 @@ export default class extends TestableScene {
     this.createTestedEntity();
     this.createGUI();
 
-    new OrbitControls(this.camera, canvas);
+    new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 10);
 
     window.addEventListener('click', this.shootBall);

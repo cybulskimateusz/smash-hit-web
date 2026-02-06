@@ -3,10 +3,7 @@ import MeshSplitter from '@src/components/MeshSplitter';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/Entity';
-import type World from '@src/World';
-import { Testable } from '@testable/index';
 import TestableScene from '@testable/TestableScene';
-import autoBind from 'auto-bind';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
@@ -16,18 +13,16 @@ import PhysicsSystem from '../PhysicsSystem';
 import RenderSystem from '../RenderSystem';
 import PhysicsDebrisSystem from './PhysicsDebrisSystem';
 
-@Testable('/systems/PhysicsDebrisSystem')
 export default class extends TestableScene {
+  static path = '/systems/PhysicsDebrisSystem';
+  
   private currentEntity?: Entity;
   private params = {
     amount: 10,
     gravityScale: 1,
   };
 
-  constructor(world: World, canvas: HTMLCanvasElement) {
-    super(world, canvas);
-    autoBind(this);
-
+  init() {
     this.world.addSystem(new PhysicsSystem());
     this.world.addSystem(new MeshSplitterSystem());
     this.world.addSystem(new PhysicsDebrisSystem());
@@ -37,7 +32,7 @@ export default class extends TestableScene {
     this.spawnFloor();
     this.createGUI();
 
-    new OrbitControls(this.camera, canvas);
+    new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 15);
     this.camera.lookAt(0, 0, 0);
   }
