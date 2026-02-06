@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import type Entity from '../Entity';
+import type Entity from '../core/Entity';
 
 class MeshSplitter {
   center = new Vector3(0, 0, 0);

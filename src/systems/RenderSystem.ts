@@ -3,8 +3,8 @@ import * as THREE from 'three';
 
 import ThreeObject from '../components/ThreeMesh';
 import Transform from '../components/Transform';
-import type Entity from '../Entity';
-import System from '../System';
+import type Entity from '../core/Entity';
+import System from '../core/System';
 
 class RenderSystem extends System {
   constructor(private scene: THREE.Scene) {

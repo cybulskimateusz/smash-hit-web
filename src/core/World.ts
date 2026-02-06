@@ -1,9 +1,12 @@
+import ClockManager from '@src/managers/ClockManager';
+
 import Entity from './Entity';
 import type System from './System';
 
 class World {
   entities: Entity[] = [];
   systems: System[] = [];
+  clockManager = ClockManager.instance;
   
   createEntity(): Entity {
     const entity = new Entity();
@@ -31,7 +34,7 @@ class World {
   }
   
   update(): void {
-    this.systems.forEach(system => system.enabled && system.update());
+    this.systems.forEach(system => system.enabled && system.update(this.clockManager.currentTime));
   }
 }
 

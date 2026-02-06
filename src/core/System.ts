@@ -6,7 +6,7 @@ abstract class System {
   enabled = true;
 
   init?(): void;
-  abstract update(): void;
+  abstract update(time: number): void;
   
   query(...components: EntityComponentType<unknown>[]): Entity[] {
     return this.world.entities.filter(entity =>

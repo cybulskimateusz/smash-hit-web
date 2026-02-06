@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import type World from '../World';
+import type World from '../core/World';
 
 abstract class GameScene extends THREE.Scene {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);

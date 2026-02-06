@@ -2,6 +2,7 @@ import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
 import type GameScene from '../components/GameScene';
+import ClockManager from './ClockManager';
 import GlobalUniformsManager from './GlobalUniformsManager';
 
 interface RenderingManagerProps {
@@ -20,9 +21,8 @@ class RenderingManager extends THREE.WebGLRenderer {
     magFilter: THREE.LinearFilter,
     generateMipmaps: true,
   });
-  public isRunning = true;
   public scene?: GameScene;
-  public clock = new THREE.Clock();
+  public clockManager = ClockManager.instance;
 
   constructor(private props: RenderingManagerProps) {
     super({
@@ -41,16 +41,10 @@ class RenderingManager extends THREE.WebGLRenderer {
     this.backgroundTarget.texture;
 
     GlobalUniformsManager.instance.uniforms.gTime.value = 
-    this.clock.getElapsedTime();
+    this.clockManager.currentTime;
   }
 
   private animationLoop() {
-    if (!this.isRunning) {
-      this.clock.stop();
-      return;
-    }
-    if (!this.clock.running) this.clock.running = true;
-
     this.applyUniforms();
 
     if (!this.scene) return;
@@ -70,7 +64,7 @@ class RenderingManager extends THREE.WebGLRenderer {
     if (backgroundUniform) backgroundUniform.value = this.backgroundTarget.texture;
 
     const timeUniform = GlobalUniformsManager.instance.uniforms.gTime;
-    if (timeUniform) timeUniform.value = this.clock.getElapsedTime();
+    if (timeUniform) timeUniform.value = this.clockManager.currentTime;
 
     const resolutionUniform = GlobalUniformsManager.instance.uniforms.gResolution;
     if (resolutionUniform) {
@@ -94,14 +88,10 @@ class RenderingManager extends THREE.WebGLRenderer {
 
   private addEventListeners() {
     window.addEventListener('resize', this.onResize);
-    window.addEventListener('focus', () => (this.isRunning = true));
-    window.addEventListener('blur', () => (this.isRunning = false));
   }
 
   private removeEventListeners() {
     window.removeEventListener('resize', this.onResize);
-    window.removeEventListener('focus', () => (this.isRunning = true));
-    window.removeEventListener('blur', () => (this.isRunning = false));
   }
 }
 

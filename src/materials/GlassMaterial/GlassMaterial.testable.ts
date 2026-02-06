@@ -1,6 +1,6 @@
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
-import type Entity from '@src/Entity';
+import type Entity from '@src/core/Entity';
 import GlobalUniformsMaterialsSystem from '@src/systems/GlobalUniformsMaterialsSystem/GlobalUniformsMaterialsSystem';
 import RenderSystem from '@src/systems/RenderSystem';
 import TestableScene, { type GeometryType } from '@testable/TestableScene';

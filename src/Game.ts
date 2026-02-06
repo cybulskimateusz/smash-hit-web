@@ -1,8 +1,7 @@
+import GameScene from '@src/components/GameScene';
+import World from '@src/core/World';
+import RenderingManager from '@src/managers/RenderingManager';
 import autoBind from 'auto-bind';
-
-import GameScene from './components/GameScene';
-import RenderingManager from './managers/RenderingManager';
-import World from './World';
 
 declare global {
   interface Window {

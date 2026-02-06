@@ -7,8 +7,8 @@ import MeshSplitter from '../components/MeshSplitter';
 import RigidBody from '../components/RigidBody';
 import ThreeMesh from '../components/ThreeMesh';
 import Transform from '../components/Transform';
-import type Entity from '../Entity';
-import type World from '../World';
+import type Entity from '../core/Entity';
+import type World from '../core/World';
 
 export interface SplittableGlassOptions {
   position?: THREE.Vector3;

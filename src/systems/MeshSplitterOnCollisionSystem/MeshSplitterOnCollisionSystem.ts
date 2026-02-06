@@ -1,7 +1,7 @@
 import Collider from '../../components/Collider';
 import MeshSplitter from '../../components/MeshSplitter';
-import Entity from '../../Entity';
-import System from '../../System';
+import Entity from '../../core/Entity';
+import System from '../../core/System';
 
 /**
  * Toggles mesh splitting on collided MeshSplitter.

@@ -1,6 +1,6 @@
 import MeshSplitter from '@src/components/MeshSplitter';
 import Transform from '@src/components/Transform';
-import type Entity from '@src/Entity';
+import type Entity from '@src/core/Entity';
 import TestableScene from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';

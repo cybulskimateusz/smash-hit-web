@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import Collider from '../components/Collider';
 import RigidBody from '../components/RigidBody';
 import Transform from '../components/Transform';
-import type Entity from '../Entity';
-import System from '../System';
+import type Entity from '../core/Entity';
+import System from '../core/System';
 
 class PhysicsSystem extends System {
   private rapierWorld!: RAPIER.World;

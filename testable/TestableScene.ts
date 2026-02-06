@@ -5,8 +5,8 @@ import MeshSplitter from '@src/components/MeshSplitter';
 import RigidBody from '@src/components/RigidBody';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
-import type Entity from '@src/Entity';
-import type World from '@src/World';
+import type Entity from '@src/core/Entity';
+import type World from '@src/core/World';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
