@@ -30,7 +30,6 @@ export default class extends TestableScene {
     const threeMesh = new ThreeMesh();
     threeMesh.usesGlobalUniforms = true;
     threeMesh.mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material);
-    threeMesh.mesh.layers.set(1);
 
     entity.add(threeMesh).add(new Transform());
 

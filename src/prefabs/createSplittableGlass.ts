@@ -44,7 +44,6 @@ export default function createSplittableGlass(
   mesh.position.copy(position);
   mesh.rotation.copy(rotation);
   mesh.scale.copy(scale);
-  mesh.layers.set(1);
 
   const threeMesh = new ThreeMesh();
   threeMesh.usesGlobalUniforms = true;

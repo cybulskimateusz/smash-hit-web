@@ -15,6 +15,9 @@ class GlobalUniformsMaterialsSystem extends System {
     const threeMesh = entity.get(ThreeMesh);
     if (!threeMesh || !threeMesh.usesGlobalUniforms) return;
 
+    // Setting upper layer for mesh so gBackgroundSampler ignores the mesh
+    threeMesh.mesh.layers.set(1);
+
     const material = threeMesh.mesh.material as ShaderMaterial;
     if (!material) return;
 
