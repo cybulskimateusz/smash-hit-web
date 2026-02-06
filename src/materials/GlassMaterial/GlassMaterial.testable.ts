@@ -1,4 +1,3 @@
-import MaterialWithGlobalUniforms from '@src/components/EntityWithGlobalUniforms';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/Entity';
@@ -45,10 +44,11 @@ export default class extends TestableScene {
     const geometry = this.getGeometry(this.params.geometry);
 
     const threeMesh = new ThreeMesh();
+    threeMesh.usesGlobalUniforms = true;
     threeMesh.mesh = new THREE.Mesh(geometry, this.material);
     threeMesh.mesh.layers.set(1);
 
-    entity.add(threeMesh).add(new MaterialWithGlobalUniforms()).add(new Transform());
+    entity.add(threeMesh).add(new Transform());
 
     this.currentEntity = entity;
   }

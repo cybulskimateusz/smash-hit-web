@@ -1,4 +1,3 @@
-import MaterialWithGlobalUniforms from '@src/components/EntityWithGlobalUniforms';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import GlobalUniformsManager from '@src/managers/GlobalUniformsManager';
@@ -29,10 +28,11 @@ export default class extends TestableScene {
     });
 
     const threeMesh = new ThreeMesh();
+    threeMesh.usesGlobalUniforms = true;
     threeMesh.mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material);
     threeMesh.mesh.layers.set(1);
 
-    entity.add(threeMesh).add(new MaterialWithGlobalUniforms()).add(new Transform());
+    entity.add(threeMesh).add(new Transform());
 
     new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 5);

@@ -1,4 +1,4 @@
-import Debrie from '@src/components/Debrie';
+import Debrie from '@src/components/Debrie'; 
 import getExplosionMap3D from '@src/utils/three/getExplosionMap3D/getExplosionMap3D';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
@@ -22,8 +22,11 @@ class MeshSplitterSystem extends System {
     const meshSplitter = entity.get(MeshSplitter);
     if (!meshSplitter?.isSplitted) return;
 
-    const mesh = entity.get(ThreeObject)?.mesh;
-    if (!mesh || !meshSplitter) return;
+    const threeMesh = entity.get(ThreeObject);
+    if (!threeMesh || !meshSplitter) return;
+    console.log(threeMesh);
+
+    const mesh = threeMesh.mesh;
 
     mesh.updateMatrixWorld(true);
     const relativePoint = mesh.worldToLocal(meshSplitter.center.clone());
@@ -60,6 +63,7 @@ class MeshSplitterSystem extends System {
 
       const material = (mesh.material as THREE.Material).clone();
       const pieceMesh = new ThreeObject();
+      pieceMesh.usesGlobalUniforms = threeMesh.usesGlobalUniforms;
       pieceMesh.mesh = new THREE.Mesh(result.geometry, material);
       pieceMesh.mesh.position.copy(pieceCenter).applyQuaternion(meshWorldQuat).add(meshWorldPos);
       parent?.add(pieceMesh.mesh);
