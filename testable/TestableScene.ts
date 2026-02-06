@@ -13,7 +13,7 @@ import * as THREE from 'three';
 export type GeometryType = 'Sphere' | 'Box' | 'Cylinder' | 'Cone' | 'Icosahedron';
 
 abstract class TestableScene extends GameScene {
-  static path: string;
+  static readonly path: string;
   
   constructor(world: World, canvas: HTMLCanvasElement) {
     super(world, canvas);
