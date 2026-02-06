@@ -10,12 +10,24 @@ import type World from '@src/World';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
+export type GeometryType = 'Sphere' | 'Box' | 'Cylinder' | 'Cone' | 'Icosahedron';
+
 abstract class TestableScene extends GameScene {
   static path: string;
   
   constructor(world: World, canvas: HTMLCanvasElement) {
     super(world, canvas);
     autoBind(this);
+  }
+
+  public getGeometry(type: GeometryType): THREE.BufferGeometry {
+    switch (type) {
+    case 'Sphere': return new THREE.SphereGeometry(2, 64, 64);
+    case 'Box': return new THREE.BoxGeometry(5, 10, 3);
+    case 'Cylinder': return new THREE.CylinderGeometry(1.5, 1.5, 3, 16);
+    case 'Cone': return new THREE.ConeGeometry(1.5, 3, 16);
+    case 'Icosahedron': return new THREE.IcosahedronGeometry(2, 1);
+    }
   }
   
   protected  spawnFloor(): Entity {

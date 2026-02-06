@@ -2,15 +2,13 @@ import MeshSplitter from '@src/components/MeshSplitter';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/Entity';
-import TestableScene from '@testable/TestableScene';
+import TestableScene, { type GeometryType } from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 import RenderSystem from '../RenderSystem';
 import MeshSplitterSystem from './MeshSplitterSystem';
-
-type GeometryType = 'Sphere' | 'Box' | 'Cylinder' | 'Cone' | 'Icosahedron';
 
 export default class extends TestableScene {
   static path = '/systems/MeshSplitterSystem';
@@ -35,6 +33,11 @@ export default class extends TestableScene {
 
     new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 10);
+    this.animationLoop();
+  }
+
+  private animationLoop() {
+    requestAnimationFrame(() => this.animationLoop());
     this.update();
   }
 
@@ -55,16 +58,6 @@ export default class extends TestableScene {
       const dir = transform.position.clone().sub(center).normalize();
       transform.position.add(dir.multiplyScalar(t * explosionStrength));
     });
-  }
-
-  private getGeometry(type: GeometryType): THREE.BufferGeometry {
-    switch (type) {
-    case 'Sphere': return new THREE.SphereGeometry(2, 16, 16);
-    case 'Box': return new THREE.BoxGeometry(5, 10, 3);
-    case 'Cylinder': return new THREE.CylinderGeometry(1.5, 1.5, 3, 16);
-    case 'Cone': return new THREE.ConeGeometry(1.5, 3, 16);
-    case 'Icosahedron': return new THREE.IcosahedronGeometry(2, 1);
-    }
   }
 
   private createTestedEntity() {

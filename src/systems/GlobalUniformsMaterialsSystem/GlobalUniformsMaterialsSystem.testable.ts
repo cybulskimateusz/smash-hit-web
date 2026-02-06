@@ -19,6 +19,7 @@ export default class extends TestableScene {
     this.world.addSystem(new GlobalUniformsMaterialsSystem());
 
     this.spawnFloor();
+    this.spawnBackEntity();
     const entity = this.world.createEntity();
 
     const material = new THREE.ShaderMaterial({
@@ -28,12 +29,24 @@ export default class extends TestableScene {
     });
 
     const threeMesh = new ThreeMesh();
-    threeMesh.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), material);
+    threeMesh.mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material);
     threeMesh.mesh.layers.set(1);
 
     entity.add(threeMesh).add(new MaterialWithGlobalUniforms()).add(new Transform());
 
     new OrbitControls(this.camera, this.canvas);
     this.camera.position.set(0, 0, 5);
+  }
+
+  private spawnBackEntity() {
+    const entity = this.world.createEntity();
+    
+    const threeMesh = new ThreeMesh();
+    threeMesh.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2), new THREE.MeshNormalMaterial());
+
+    const transform = new Transform();
+    transform.position.z = -5;
+
+    entity.add(threeMesh).add(transform);
   }
 }
