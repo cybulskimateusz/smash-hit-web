@@ -109,7 +109,7 @@ class PhysicsSystem extends System {
     rigidBody.handle = body.handle;
 
     const collider = entity.get(Collider);
-    if (!collider) return;
+    if (!collider?.desc) return;
 
     if (collider.isSensor) {
       collider.desc.setSensor(true);

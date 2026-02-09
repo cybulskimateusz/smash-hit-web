@@ -38,6 +38,7 @@ export default class extends TestableScene {
 
   private animationLoop() {
     requestAnimationFrame(() => this.animationLoop());
+    this.world.update();
     this.update();
   }
 
@@ -70,6 +71,8 @@ export default class extends TestableScene {
       this.world.destroyEntity(piece);
     });
 
+    const transform = new Transform();
+
     const entity = this.world.createEntity();
     const geometry = this.getGeometry(this.params.geometry);
     mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
@@ -77,13 +80,13 @@ export default class extends TestableScene {
     threeMesh.mesh = mesh;
     this.add(threeMesh.mesh);
     entity.add(threeMesh);
-    entity.add(new Transform());
+    entity.add(transform);
 
     const meshSplitter = new MeshSplitter();
     meshSplitter.amount = this.params.amount;
     meshSplitter.outerRadius = this.params.outerRadius;
     meshSplitter.innerRadius = this.params.innerRadius;
-    meshSplitter.center.set(this.params.centerX, this.params.centerY, 0);
+    meshSplitter.center.set(this.params.centerX, this.params.centerY, transform.position.z);
 
     entity.add(meshSplitter);
 

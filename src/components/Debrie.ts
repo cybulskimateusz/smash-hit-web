@@ -1,1 +1,2 @@
-export default class {}
+class Debrie {}
+export default Debrie;
