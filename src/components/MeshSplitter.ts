@@ -9,7 +9,9 @@ class MeshSplitter {
   innerRadius = 0;
 
   isSplitScheduled = false;
+  shouldSplit = false;
   isSplitted = false;
+  
   debris: Entity[] = [];
 }
 

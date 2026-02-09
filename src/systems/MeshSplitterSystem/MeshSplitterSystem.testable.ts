@@ -97,7 +97,7 @@ export default class extends TestableScene {
     const meshSplitter = entity.get(MeshSplitter);
     if (!meshSplitter) return;
 
-    meshSplitter.isSplitted = true;
+    meshSplitter.shouldSplit = true;
   };
 
   private createGUI() {

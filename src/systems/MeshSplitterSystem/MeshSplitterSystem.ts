@@ -29,7 +29,8 @@ class MeshSplitterSystem extends QueuedWorkSystem {
 
   private scheduleSplit(entity: Entity) {
     const meshSplitter = entity.get(MeshSplitter);
-    if (!meshSplitter?.isSplitted || meshSplitter?.isSplitScheduled) return;
+    if (!meshSplitter?.shouldSplit || meshSplitter.isSplitScheduled) return;
+    meshSplitter.isSplitScheduled = true;
 
     const threeMesh = entity.get(ThreeObject);
     if (!threeMesh || !meshSplitter) return;
@@ -54,12 +55,11 @@ class MeshSplitterSystem extends QueuedWorkSystem {
       index,
     })).filter(Boolean);
 
-    meshSplitter.isSplitScheduled = true;
-
     this.queueWork({
       callback: this.createDebrie,
       items: pieces,
       onFinished: () => {
+        meshSplitter.isSplitted = true;
         this.world.destroyEntity(entity);
       },
     });

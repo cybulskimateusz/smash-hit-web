@@ -16,10 +16,10 @@ export default class MeshSplitterOnCollisionSystem extends System {
     if (!collider || collider.collisions.length === 0) return;
 
     const meshSplitter = entity.get(MeshSplitter);
-    if (!meshSplitter || meshSplitter.isSplitted) return;
+    if (!meshSplitter || meshSplitter.shouldSplit) return;
 
     meshSplitter.center = collider.collisions[0].position.clone();
-    meshSplitter.isSplitted = true;
+    meshSplitter.shouldSplit = true;
   }
 
   onEntityRemoved(_entity:Entity): void {}
