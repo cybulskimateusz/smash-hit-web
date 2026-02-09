@@ -22,6 +22,8 @@ export default class extends TestableScene {
     gravityScale: 1,
   };
 
+  private isSplitted = false;
+
   init() {
     this.world.addSystem(new PhysicsSystem());
     this.world.addSystem(new MeshSplitterSystem());
@@ -32,9 +34,9 @@ export default class extends TestableScene {
     this.spawnFloor();
     this.createGUI();
 
-    new OrbitControls(this.camera, this.canvas);
-    this.camera.position.set(0, 0, 15);
-    this.camera.lookAt(0, 0, 0);
+    new OrbitControls(this.world.camera, this.canvas);
+    this.world.camera.position.set(0, 0, 15);
+    this.world.camera.lookAt(0, 0, 0);
   }
 
   private createTestedEntity() {
@@ -72,15 +74,16 @@ export default class extends TestableScene {
 
   private splitEntity() {
     const meshSplitter = this.currentEntity?.get(MeshSplitter);
-    if (!meshSplitter || meshSplitter.isSplitted) return;
+    if (!meshSplitter || this.isSplitted) return;
 
-    meshSplitter.isSplitted = true;
+    meshSplitter.shouldSplit = true;
 
-    requestAnimationFrame(() => {
+    if (meshSplitter.isSplitted) {
       meshSplitter.debris.forEach(entity => {
         entity.add(new Debrie());
       });
-    });
+      this.isSplitted = true;
+    }
   }
 
   private createGUI() {

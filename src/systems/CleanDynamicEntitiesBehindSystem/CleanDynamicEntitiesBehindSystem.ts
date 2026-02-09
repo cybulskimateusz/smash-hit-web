@@ -5,16 +5,10 @@ import System from '@src/core/System';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
-/**
- * // TODO Apply Dynamic only on items that require it.
- * Right now newly thrown ball has position Z of camera
- * what removes it immediately after camera moves.
- */
-const SAFE_DISTANCE_BOUND = 5;
+const CLEANUP_DISTANCE = 200;
 
 export default class extends System {
-  constructor(private camera: THREE.Camera) {
-    super();
+  init(): void {
     autoBind(this);
   }
 
@@ -25,12 +19,17 @@ export default class extends System {
   private removeEntitiesBehind(entity: Entity) {
     const transform = entity.get(Transform);
     if (!transform) return;
+    const cameraDirection = new THREE.Vector3(0, 0, -1);
+    cameraDirection.applyQuaternion(this.world.camera.quaternion);
 
-    if (transform.position.z > this.camera.position.z + SAFE_DISTANCE_BOUND) {
+    const toEntity = transform.position.clone().sub(this.world.camera.position);
+
+    const dotProduct = toEntity.dot(cameraDirection);
+
+    if (dotProduct < -CLEANUP_DISTANCE) {
       this.world.destroyEntity(entity);
     }
   }
 
-  init(): void {}
   onEntityRemoved(): void {}
 }

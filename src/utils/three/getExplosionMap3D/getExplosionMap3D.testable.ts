@@ -21,11 +21,11 @@ export default class extends TestableScene {
   };
 
   init() {
-    new OrbitControls(this.camera, this.canvas);
+    new OrbitControls(this.world.camera, this.canvas);
     this.setupGUI();
     this.generate();
 
-    this.camera.position.set(0, 0, 10);
+    this.world.camera.position.set(0, 0, 10);
   }
 
   private setupGUI() {

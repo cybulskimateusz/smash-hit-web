@@ -10,18 +10,18 @@ export default class extends TestableScene {
   init(): void {
     this.world
       .addSystem(new RenderSystem(this))
-      .addSystem(new SpawnTotemsSystem(this.camera))
-      .addSystem(new CleanEntitiesBehindSystem(this.camera));
+      .addSystem(new SpawnTotemsSystem())
+      .addSystem(new CleanEntitiesBehindSystem());
 
     this.spawnFloor();
-    this.camera.position.set(0, 0, 10);
+    this.world.camera.position.set(0, 0, 10);
     this.addKeyboardControls();
   }
 
   private addKeyboardControls(): void {
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp') this.camera.position.z -= 1;
-      if (e.key === 'ArrowDown') this.camera.position.z += 1;
+      if (e.key === 'ArrowUp') this.world.camera.position.z -= 1;
+      if (e.key === 'ArrowDown') this.world.camera.position.z += 1;
     });
   }
 }

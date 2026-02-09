@@ -5,12 +5,12 @@ import RenderSystem from '../RenderSystem';
 import CameraMovementSystem from './CameraMovementSystem';
 
 export default class extends TestableScene {
-  static path = '/system/CameraMovementSystem';
+  static path = '/systems/CameraMovementSystem';
 
   init(): void {
     this.world
       .addSystem(new RenderSystem(this))
-      .addSystem(new CameraMovementSystem(this.camera));
+      .addSystem(new CameraMovementSystem());
 
     this.spawnFloor();
     this.createDumb();

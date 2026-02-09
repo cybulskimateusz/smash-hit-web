@@ -31,8 +31,8 @@ export default class extends TestableScene {
     this.createTestedEntity();
     this.createGUI();
 
-    new OrbitControls(this.camera, this.canvas);
-    this.camera.position.set(0, 0, 10);
+    new OrbitControls(this.world.camera, this.canvas);
+    this.world.camera.position.set(0, 0, 10);
     this.animationLoop();
   }
 

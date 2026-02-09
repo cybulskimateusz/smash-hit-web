@@ -19,7 +19,7 @@ export default class extends TestableScene {
   };
 
   init() {
-    new OrbitControls(this.camera, this.canvas);
+    new OrbitControls(this.world.camera, this.canvas);
 
     const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.05 });
     this.pointsMesh = new THREE.Points(this.geometry, material);
@@ -28,7 +28,7 @@ export default class extends TestableScene {
     this.setupGUI();
     this.generate();
 
-    this.camera.position.set(0, 0, 5);
+    this.world.camera.position.set(0, 0, 5);
   }
 
   private setupGUI() {

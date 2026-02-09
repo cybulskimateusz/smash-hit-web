@@ -33,8 +33,8 @@ export default class extends TestableScene {
 
     entity.add(threeMesh).add(new Transform());
 
-    new OrbitControls(this.camera, this.canvas);
-    this.camera.position.set(0, 0, 5);
+    new OrbitControls(this.world.camera, this.canvas);
+    this.world.camera.position.set(0, 0, 5);
   }
 
   private spawnBackEntity() {

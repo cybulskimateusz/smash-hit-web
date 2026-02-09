@@ -1,4 +1,5 @@
 import ClockManager from '@src/managers/ClockManager';
+import * as THREE from 'three';
 
 import Entity from './Entity';
 import type System from './System';
@@ -6,7 +7,9 @@ import type System from './System';
 class World {
   entities: Entity[] = [];
   systems: System[] = [];
+
   clockManager = ClockManager.instance;
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   
   createEntity(): Entity {
     const entity = new Entity();

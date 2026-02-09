@@ -32,8 +32,8 @@ export default class extends TestableScene {
     this.createTestedEntity();
     this.createGUI();
 
-    new OrbitControls(this.camera, this.canvas);
-    this.camera.position.set(0, 0, 10);
+    new OrbitControls(this.world.camera, this.canvas);
+    this.world.camera.position.set(0, 0, 10);
 
     window.addEventListener('click', this.shootBall);
     this.update();
@@ -78,7 +78,7 @@ export default class extends TestableScene {
     );
 
     const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
+    raycaster.setFromCamera(mouse, this.world.camera);
 
     const ballEntity = this.spawnBall();
 

@@ -50,13 +50,13 @@ class RenderingManager extends THREE.WebGLRenderer {
     if (!this.scene) return;
     this.props.onUpdate();
 
-    this.scene.camera.layers.set(0);
+    this.scene.world.camera.layers.set(0);
     this.setRenderTarget(this.backgroundTarget);
-    this.render(this.scene, this.scene.camera);
+    this.render(this.scene, this.scene.world.camera);
 
     this.setRenderTarget(null);
-    this.scene.camera.layers.enableAll();
-    this.render(this.scene, this.scene.camera);
+    this.scene.world.camera.layers.enableAll();
+    this.render(this.scene, this.scene.world.camera);
   }
 
   private applyUniforms() {

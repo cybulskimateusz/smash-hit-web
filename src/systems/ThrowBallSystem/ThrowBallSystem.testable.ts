@@ -8,12 +8,10 @@ export default class extends TestableScene {
   static path = '/systems/ThrowBallSystem';
 
   init(): void {
-    const physicsSystem = new PhysicsSystem();
-
     this.world
       .addSystem(new RenderSystem(this))
-      .addSystem(physicsSystem)
-      .addSystem(new ThrowBallSystem(this.camera, physicsSystem));
+      .addSystem(new PhysicsSystem())
+      .addSystem(new ThrowBallSystem());
 
     this.spawnFloor();
   }

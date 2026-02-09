@@ -29,7 +29,7 @@ export default function createSplittableGlass(
     position = new THREE.Vector3(0, 0, -2),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
-    geometry = new THREE.SphereGeometry(1.2, 32, 32),
+    geometry = new THREE.BoxGeometry(10, 15, 10),
     material = new GlassMaterial(),
     splitAmount = 15,
   } = options;
@@ -65,8 +65,6 @@ export default function createSplittableGlass(
 
   const meshSplitter = new MeshSplitter();
   meshSplitter.amount = splitAmount;
-
-  // transform.scale.set(0.7, 0.7, 0.7);
 
   entity
     .add(transform)

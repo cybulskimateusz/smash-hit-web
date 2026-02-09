@@ -1,21 +1,22 @@
 import System from '@src/core/System';
 import * as PREFABS from '@src/prefabs';
+import { TUBE_DEFAULTS } from '@src/prefabs/createTubeSegment';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
-import type PhysicsSystem from '../PhysicsSystem';
+import PhysicsSystem from '../PhysicsSystem';
 
 export default class extends System {
-  constructor(
-    private camera: THREE.Camera,
-    private physicsSystem: PhysicsSystem
-  ) {
-    super();
-    autoBind(this);
-  }
+  private readonly ballSpeed = 300;
+  private physicsSystem?: PhysicsSystem;
 
   init(): void {
+    autoBind(this);
     this.addEventListeners();
+
+    const physicsSystem = this.world.systems.find(system => system instanceof PhysicsSystem);
+    if (!physicsSystem) throw Error('ThrowBallSystem requires PhysicsSystem to be in world');
+    this.physicsSystem = physicsSystem;
   }
 
   private shootBall(event: MouseEvent) {
@@ -23,17 +24,25 @@ export default class extends System {
       (event.clientX / window.innerWidth) * 2 - 1,
       -(event.clientY / window.innerHeight) * 2 + 1
     );
-    
+
     const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.camera);
-    
+    raycaster.setFromCamera(mouse, this.world.camera);
+
+    const spawnOffset = raycaster.ray.direction.clone().multiplyScalar(5);
+    const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
+
     const entity = PREFABS.createBall(this.world, {
-      position: new THREE.Vector3(mouse.x, mouse.y, this.camera.position.z)
+      position: spawnPosition
     });
 
     requestAnimationFrame(() => {
-      const direction = raycaster.ray.direction.clone().multiplyScalar(20);
-      this.physicsSystem.setVelocity(entity, direction);
+      const throwVelocity = raycaster.ray.direction.clone().multiplyScalar(this.ballSpeed);
+
+      const cameraForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.world.camera.quaternion);
+      const cameraVelocity = cameraForward.multiplyScalar(TUBE_DEFAULTS.speed);
+
+      const totalVelocity = throwVelocity.add(cameraVelocity);
+      this.physicsSystem?.setVelocity(entity, totalVelocity);
     });
   }
 

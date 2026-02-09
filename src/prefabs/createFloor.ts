@@ -1,4 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
+import TVNoiseMaterial from '@src/materials/TVNoiseMaterial/TVNoiseMaterial';
 import * as THREE from 'three';
 
 import Collider from '../components/Collider';
@@ -14,7 +15,7 @@ export default function createSplittableGlass(
   const entity = world.createEntity();
   const floorMesh = new THREE.Mesh(
     new THREE.BoxGeometry(500, 1, 500),
-    new THREE.MeshNormalMaterial()
+    new TVNoiseMaterial()
   );
   floorMesh.position.set(0, -5, 0);
 

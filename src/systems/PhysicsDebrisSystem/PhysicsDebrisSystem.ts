@@ -2,6 +2,7 @@ import RAPIER from '@dimforge/rapier3d';
 import Debrie from '@src/components/Debrie';
 import type { ConvexHullResponse } from '@src/workers/convexHullWorker';
 import ConvexHullWorker from '@src/workers/convexHullWorker?worker';
+import autoBind from 'auto-bind';
 
 import Collider from '../../components/Collider';
 import RigidBody from '../../components/RigidBody';
@@ -15,6 +16,7 @@ export default class PhysicsDebrisSystem extends System {
   private nextId = 0;
 
   init(): void {
+    autoBind(this);
     this.worker.onmessage = (e: MessageEvent<ConvexHullResponse>) => {
       const { id, hullVertices } = e.data;
       const entity = this.pendingEntities.get(id);
@@ -27,6 +29,7 @@ export default class PhysicsDebrisSystem extends System {
 
       const rigidBody = new RigidBody();
       rigidBody.desc = RAPIER.RigidBodyDesc.dynamic();
+      rigidBody.gravityScale = 3;
 
       const collider = new Collider();
       collider.desc = hull;

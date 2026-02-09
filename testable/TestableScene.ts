@@ -70,7 +70,7 @@ abstract class TestableScene extends GameScene {
     threeMesh.mesh = ballMesh;
 
     const transform = new Transform();
-    transform.position.copy(this.camera.position);
+    transform.position.copy(this.world.camera.position);
 
     const rigidBody = new RigidBody();
     rigidBody.desc = RAPIER.RigidBodyDesc.dynamic();
