@@ -1,5 +1,6 @@
 import Debrie from '@src/components/Debrie'; 
 import MeshSplitter from '@src/components/MeshSplitter';
+import Temporary from '@src/components/Temporary';
 import ThreeObject from '@src/components/ThreeMesh';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
@@ -87,7 +88,12 @@ class MeshSplitterSystem extends QueuedWorkSystem {
     const pieceCenter = result.geometry.boundingBox!.getCenter(new THREE.Vector3());
     result.geometry.translate(-pieceCenter.x, -pieceCenter.y, -pieceCenter.z);
 
+    // THREE.UniformsUtils: Textures of render targets cannot be cloned - this is expected behavior
+    const savedWarn = console.warn;
+    console.warn = () => {};
     const material = (refenceMesh.mesh.material as THREE.Material).clone();
+    console.warn = savedWarn;
+    
     const pieceMesh = new ThreeObject();
     pieceMesh.usesGlobalUniforms = refenceMesh.usesGlobalUniforms;
     pieceMesh.mesh = new THREE.Mesh(result.geometry, material);
@@ -97,7 +103,11 @@ class MeshSplitterSystem extends QueuedWorkSystem {
     transform.rotation.copy(refenceTransform.rotation);
 
     const pieceEntity = this.world.createEntity();
-    pieceEntity.add(transform).add(pieceMesh).add(new Debrie());
+    pieceEntity
+      .add(transform)
+      .add(pieceMesh)
+      .add(new Debrie())
+      .add(new Temporary());
 
     item.reference.get(MeshSplitter)!.debris.push(pieceEntity);
   }

@@ -1,5 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
-import Dynamic from '@src/components/Dynamic';
+import Temporary from '@src/components/Temporary';
 import * as THREE from 'three';
 
 import Collider from '../components/Collider';
@@ -49,7 +49,7 @@ export default function createBall(
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
-    .add(new Dynamic());
+    .add(new Temporary());
 
   return entity;
 }

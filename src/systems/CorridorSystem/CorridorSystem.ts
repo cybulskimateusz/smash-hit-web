@@ -8,7 +8,7 @@ import autoBind from 'auto-bind';
  * Creates TubeGeometry around incoming CameraRails
  */
 export default class extends System {
-  private corridorCreated: Entity[] = [];
+  private railToCorridorMap = new Map<Entity, Entity>();
 
   init(): void {
     autoBind(this);
@@ -19,12 +19,18 @@ export default class extends System {
   }
 
   spawnCorridor(entity: Entity) {
-    if (this.corridorCreated.includes(entity)) return;
+    if (this.railToCorridorMap.has(entity)) return;
 
     const { rail } = entity.get(CameraRail)!;
-    createCorridor(this.world, { curve: rail, segmentIndex: this.corridorCreated.length });
-    this.corridorCreated.push(entity);
+    const corridor = createCorridor(this.world, { curve: rail, segmentIndex: this.railToCorridorMap.size });
+    this.railToCorridorMap.set(entity, corridor);
   }
 
-  onEntityRemoved(_entity: Entity): void {}
+  onEntityRemoved(entity: Entity): void {
+    const corridor = this.railToCorridorMap.get(entity);
+    if (corridor) {
+      this.world.destroyEntity(corridor);
+      this.railToCorridorMap.delete(entity);
+    }
+  }
 }

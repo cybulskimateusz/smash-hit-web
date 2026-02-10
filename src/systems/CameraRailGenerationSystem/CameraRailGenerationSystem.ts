@@ -20,6 +20,7 @@ export default class extends System {
   private rails: CameraRail[] = [];
 
   init(): void {
+    autoBind(this);
     Array.from({ length: this.allowedRailsAmount }, () => this.createRail());
   }
 

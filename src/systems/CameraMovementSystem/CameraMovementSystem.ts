@@ -4,10 +4,11 @@ import System from '@src/core/System';
 import ClockManager from '@src/managers/ClockManager';
 import autoBind from 'auto-bind';
 
-const RAIL_DURATION = 3;
+const CAMERA_SPEED = 0.04;
 
 export default class extends System {
   private currentRail?: CameraRail;
+  private currentRailLength = 0;
   private railStartedAt = ClockManager.instance.currentTime;
 
   init(): void {
@@ -33,7 +34,8 @@ export default class extends System {
   private updateProgress(time: number) {
     if (!this.currentRail) return;
     const elapsed = time - this.railStartedAt;
-    const progress = Math.min(elapsed / RAIL_DURATION, 1);
+    const distance = elapsed * CAMERA_SPEED;
+    const progress = Math.min(distance / this.currentRailLength, 1);
     this.currentRail.progress = progress;
     if (progress >= 1) this.currentRail = undefined;
   }
@@ -44,7 +46,8 @@ export default class extends System {
 
     if (!availableEntities.length) return;
 
-    this.currentRail = availableEntities[0].get(CameraRail);
+    this.currentRail = availableEntities[0].get(CameraRail)!;
+    this.currentRailLength = this.currentRail.rail.getLength();
     this.railStartedAt = ClockManager.instance.currentTime;
   }
 

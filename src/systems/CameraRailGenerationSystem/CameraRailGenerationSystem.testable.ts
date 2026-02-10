@@ -55,7 +55,7 @@ class CameraRailGenerationSystemTestable extends TestableScene {
 
   protected incrementRails() {
     const currentPath = this.testedSystem.query(CameraRail).find(
-      entity => entity.get(CameraRail)!.progress != 1
+      entity => entity.get(CameraRail)!.progress < 1
     );
     if (!currentPath) return;
 

@@ -1,13 +1,13 @@
 import Corridor from '@src/components/Corridor';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import createSplittableGlass from '@src/prefabs/createSplittableGlass';
+import createTotem from '@src/prefabs/createTotem';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
 export default class SpawnTotemsSystem extends System {
   private processedCorridors: Entity[] = [];
-  private readonly totemsPerCorridor = 2;
+  private readonly totemsPerCorridor = 1;
 
   constructor() {
     super();
@@ -40,7 +40,7 @@ export default class SpawnTotemsSystem extends System {
         .addScaledVector(right, Math.cos(angle) * radius * 0.5)
         .addScaledVector(realUp, Math.sin(angle) * radius * 0.5);
 
-      createSplittableGlass(this.world, {
+      createTotem(this.world, {
         position: position.add(offset)
       });
     }

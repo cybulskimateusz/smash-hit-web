@@ -7,7 +7,7 @@ class ClockManager {
 
   private startTime = Date.now();
   private _currentTime = 0;
-  public get currentTime() {return this._currentTime / 1000;}
+  public get currentTime() {return this._currentTime; }
 
   constructor() {
     autoBind(this);

@@ -1,6 +1,6 @@
 import RAPIER from '@dimforge/rapier3d';
 import Corridor from '@src/components/Corridor';
-// import getCurve from '@src/utils/three/getCurve/getCurve';
+import MetalPlateMaterial from '@src/materials/MetalPlateMateral/MetalPlateMateral';
 import * as THREE from 'three';
 
 import Collider from '../components/Collider';
@@ -54,10 +54,8 @@ export default function createCorridor(
     false
   );
 
-  const hue = (corridorProperties.segmentIndex * 0.1) % 1;
-  const color = new THREE.Color().setHSL(hue, 0.6, 0.5);
-  const material = new THREE.MeshLambertMaterial({ color });
-  material.side = THREE.DoubleSide;
+  const material = new MetalPlateMaterial();
+  material.side = THREE.BackSide;
 
   const mesh = new THREE.Mesh(geometry, material);
 
@@ -67,6 +65,7 @@ export default function createCorridor(
   const threeMesh = new ThreeMesh();
   threeMesh.mesh = mesh;
 
+  threeMesh.mesh.add(new THREE.PointLight(0x00ff00, 1, 10));
   const rigidBody = new RigidBody();
   rigidBody.desc = RAPIER.RigidBodyDesc.fixed();
 
