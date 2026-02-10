@@ -1,4 +1,5 @@
 import RAPIER from '@dimforge/rapier3d';
+import OwnedBy from '@src/components/OwnedBy';
 import Temporary from '@src/components/Temporary';
 import * as THREE from 'three';
 
@@ -13,6 +14,7 @@ export interface BallOptions {
   position?: THREE.Vector3;
   radius?: number;
   color?: number;
+  owner?: Entity;
 }
 
 export default function createBall(
@@ -21,8 +23,9 @@ export default function createBall(
 ): Entity {
   const {
     position = new THREE.Vector3(0, 0, 0),
-    radius = 0.3,
+    radius = 1,
     color = 0xff6600,
+    owner,
   } = options;
 
   const entity = world.createEntity();
@@ -39,7 +42,7 @@ export default function createBall(
   threeMesh.mesh = mesh;
 
   const rigidBody = new RigidBody();
-  rigidBody.desc = RAPIER.RigidBodyDesc.dynamic();
+  rigidBody.desc = RAPIER.RigidBodyDesc.dynamic().setCcdEnabled(true);
 
   const collider = new Collider();
   collider.desc = RAPIER.ColliderDesc.ball(radius);
@@ -53,6 +56,12 @@ export default function createBall(
     .add(rigidBody)
     .add(collider)
     .add(temporary);
+
+  if (owner) {
+    const ownedBy = new OwnedBy();
+    ownedBy.player = owner;
+    entity.add(ownedBy);
+  }
 
   return entity;
 }

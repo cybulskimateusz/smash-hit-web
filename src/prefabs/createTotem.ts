@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import Collider from '../components/Collider';
 import MeshSplitter from '../components/MeshSplitter';
 import RigidBody from '../components/RigidBody';
+import ScoreReward from '../components/ScoreReward';
 import ThreeMesh from '../components/ThreeMesh';
 import Transform from '../components/Transform';
 import type Entity from '../core/Entity';
@@ -21,8 +22,7 @@ export interface TotemOptions {
 
 const TOTEM_GEOMETRIES = {
   box: new THREE.BoxGeometry(3, 4, 3),
-  icosahedron: new THREE.IcosahedronGeometry(2, 1),
-  sphere: new THREE.IcosahedronGeometry(3, 1),
+  sphere: new THREE.SphereGeometry(3, 32, 32),
 };
 
 const TOTEM_DEFAULT_PROPS: TotemOptions = {
@@ -80,12 +80,15 @@ export default function createTotem(
   const meshSplitter = new MeshSplitter();
   meshSplitter.amount = props.splitAmount!;
 
+  const scoreReward = new ScoreReward();
+
   entity
     .add(transform)
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
-    .add(meshSplitter);
+    .add(meshSplitter)
+    .add(scoreReward);
 
   return entity;
 }

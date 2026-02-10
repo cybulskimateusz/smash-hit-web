@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
 import { defineConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
@@ -25,5 +26,5 @@ export default defineConfig({
   optimizeDeps: {
     entries: [path.resolve(__dirname, 'src/**/*.ts')],
   },
-  plugins: [wasm(), viteGlslify()],
+  plugins: [basicSsl(), wasm(), viteGlslify()],
 });

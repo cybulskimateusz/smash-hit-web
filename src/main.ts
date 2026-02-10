@@ -1,11 +1,8 @@
 import './style.css';
 
-import Game from './Game';
-import AssetManager from './managers/AssetManager/AssetManager';
-import MainScene from './scenes/MainScene';
+import loadDesktop from './loadDesktop';
+import loadMobile from './loadMobile';
+import isMobile from './utils/device/isMobile';
 
-const canvas = document.querySelector('#app') as HTMLCanvasElement;
-
-AssetManager.instance.preload().then(() => {
-  new Game(canvas, MainScene);
-});
+if (isMobile()) loadMobile();
+else loadDesktop();

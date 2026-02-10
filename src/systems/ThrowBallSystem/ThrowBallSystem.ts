@@ -1,4 +1,7 @@
+import Player from '@src/components/Player';
 import System from '@src/core/System';
+import NetworkManager, { MESSAGE_TYPES } from '@src/managers/NetworkManager/NetworkManager';
+import type { BallThrownPayload } from '@src/managers/NetworkManager/types';
 import createBall from '@src/prefabs/createBall';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
@@ -6,47 +9,45 @@ import * as THREE from 'three';
 import PhysicsSystem from '../PhysicsSystem';
 
 export default class extends System {
-  private readonly ballSpeed = 300;
+  private readonly ballSpeed = 100;
   private physicsSystem?: PhysicsSystem;
 
   init(): void {
     autoBind(this);
-    this.addEventListeners();
-
     const physicsSystem = this.world.systems.find(system => system instanceof PhysicsSystem);
     if (!physicsSystem) throw Error('ThrowBallSystem requires PhysicsSystem to be in world');
     this.physicsSystem = physicsSystem;
+
+    NetworkManager.instance.connect();
+    NetworkManager.instance.on(MESSAGE_TYPES.BALL_THROWN, this.onBallThrown);
   }
 
-  private shootBall(event: MouseEvent) {
-    const mouse = new THREE.Vector2(
-      (event.clientX / window.innerWidth) * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1
-    );
+  private onBallThrown(payload: unknown) {
+    try {
+      const { direction, playerId } = payload as BallThrownPayload;
 
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, this.world.camera);
+      const owner = this.query(Player).find(entity => entity.get(Player)?.id === playerId);
 
-    const spawnOffset = raycaster.ray.direction.clone().multiplyScalar(5);
-    const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
+      const screenX = Math.max(-1, Math.min(1, direction[0]));
+      const screenY = Math.max(-1, Math.min(1, direction[1]));
 
-    const entity = createBall(this.world, {
-      position: spawnPosition
-    });
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(screenX, screenY), this.world.camera);
 
-    requestAnimationFrame(() => {
-      const throwVelocity = raycaster.ray.direction.clone().multiplyScalar(this.ballSpeed);
+      const worldDirection = raycaster.ray.direction.clone();
 
-      const cameraForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.world.camera.quaternion);
-      const cameraVelocity = cameraForward;
+      const spawnOffset = worldDirection.clone().multiplyScalar(5);
+      const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
+      const velocity = worldDirection.multiplyScalar(this.ballSpeed);
 
-      const totalVelocity = throwVelocity.add(cameraVelocity);
-      this.physicsSystem?.setVelocity(entity, totalVelocity);
-    });
-  }
+      const entity = createBall(this.world, { position: spawnPosition, owner });
 
-  private addEventListeners() {
-    window.addEventListener('click', this.shootBall);
+      requestAnimationFrame(() => {
+        this.physicsSystem?.setVelocity(entity, velocity);
+      });
+    } catch (err) {
+      console.error('[ThrowBall] ERROR:', err);
+    }
   }
 
   update(): void {}
