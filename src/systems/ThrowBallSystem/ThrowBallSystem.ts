@@ -1,6 +1,5 @@
 import System from '@src/core/System';
-import * as PREFABS from '@src/prefabs';
-import { TUBE_DEFAULTS } from '@src/prefabs/createTubeSegment';
+import createBall from '@src/prefabs/createBall';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
@@ -31,7 +30,7 @@ export default class extends System {
     const spawnOffset = raycaster.ray.direction.clone().multiplyScalar(5);
     const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
 
-    const entity = PREFABS.createBall(this.world, {
+    const entity = createBall(this.world, {
       position: spawnPosition
     });
 
@@ -39,7 +38,7 @@ export default class extends System {
       const throwVelocity = raycaster.ray.direction.clone().multiplyScalar(this.ballSpeed);
 
       const cameraForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.world.camera.quaternion);
-      const cameraVelocity = cameraForward.multiplyScalar(TUBE_DEFAULTS.speed);
+      const cameraVelocity = cameraForward;
 
       const totalVelocity = throwVelocity.add(cameraVelocity);
       this.physicsSystem?.setVelocity(entity, totalVelocity);

@@ -1,45 +1,51 @@
+import CameraRail from '@src/components/CameraRail';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import TubePathManager from '@src/managers/TubePathManager';
-import { TUBE_DEFAULTS } from '@src/prefabs/createTubeSegment';
-import * as THREE from 'three';
+import ClockManager from '@src/managers/ClockManager';
+import autoBind from 'auto-bind';
+
+const RAIL_DURATION = 3;
 
 export default class extends System {
-  private targetQuaternion = new THREE.Quaternion();
-  private smoothingFactor = 0.08; // Lower = smoother rotation
-  private readonly lookAheadDistances = [20, 40, 60]; // Multiple look-ahead points
-  private readonly lookAheadWeights = [0.5, 0.3, 0.2]; // Weights for blending
+  private currentRail?: CameraRail;
+  private railStartedAt = ClockManager.instance.currentTime;
 
-  init(): void {}
+  init(): void {
+    autoBind(this);
+  }
 
   update(time: number): void {
-    const distance = time * TUBE_DEFAULTS.speed;
-    const pathManager = TubePathManager.instance;
-    // console.log(this.world.camera);
-    // Get position along the tube path
-    const position = pathManager.getPositionAt(distance);
+    this.updateProgress(time);
+    this.scheduleRail();
+    this.moveCamera();
+  }
+
+  private moveCamera() {
+    if (!this.currentRail) return;
+    const { progress, rail } = this.currentRail;
+    const position = rail.getPointAt(progress);
+    const tangent = rail.getTangentAt(progress);
+
     this.world.camera.position.copy(position);
+    this.world.camera.lookAt(position.clone().add(tangent));
+  }
 
-    // Blend tangents from multiple look-ahead points for smoother rotation
-    const blendedTangent = new THREE.Vector3();
-    for (let i = 0; i < this.lookAheadDistances.length; i++) {
-      const lookAheadDist = distance + this.lookAheadDistances[i];
-      const tangent = pathManager.getTangentAt(lookAheadDist);
-      blendedTangent.addScaledVector(tangent, this.lookAheadWeights[i]);
-    }
-    blendedTangent.normalize().negate();
+  private updateProgress(time: number) {
+    if (!this.currentRail) return;
+    const elapsed = time - this.railStartedAt;
+    const progress = Math.min(elapsed / RAIL_DURATION, 1);
+    this.currentRail.progress = progress;
+    if (progress >= 1) this.currentRail = undefined;
+  }
 
-    const lookAtPoint = position.clone().add(blendedTangent.multiplyScalar(100));
+  scheduleRail(): void {
+    if (this.currentRail) return;
+    const availableEntities = this.query(CameraRail).filter(entity => entity.get(CameraRail)!.progress < 1);
 
-    // Create a temporary object to calculate target quaternion
-    const tempObj = new THREE.Object3D();
-    tempObj.position.copy(position);
-    tempObj.up.set(0, 1, 0); // Keep camera upright
-    tempObj.lookAt(lookAtPoint);
-    this.targetQuaternion.copy(tempObj.quaternion);
+    if (!availableEntities.length) return;
 
-    // Smoothly interpolate camera rotation
-    this.world.camera.quaternion.slerp(this.targetQuaternion, this.smoothingFactor);
+    this.currentRail = availableEntities[0].get(CameraRail);
+    this.railStartedAt = ClockManager.instance.currentTime;
   }
 
   onEntityRemoved(_entity: Entity): void {}

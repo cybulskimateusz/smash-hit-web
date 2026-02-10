@@ -1,8 +1,10 @@
 import GameScene from '@src/components/GameScene';
 import CameraMovementSystem from '@src/systems/CameraMovementSystem/CameraMovementSystem';
+import CameraRailGenerationSystem from '@src/systems/CameraRailGenerationSystem/CameraRailGenerationSystem';
 import CleanDynamicEntitiesBehindSystem from
   '@src/systems/CleanDynamicEntitiesBehindSystem/CleanDynamicEntitiesBehindSystem';
-import CleanTubeSegmentsSystem from '@src/systems/CleanTubeSegmentsSystem/CleanTubeSegmentsSystem';
+import CorridorSystem from '@src/systems/CorridorSystem/CorridorSystem';
+// import CleanTubeSegmentsSystem from '@src/systems/CleanTubeSegmentsSystem/CleanTubeSegmentsSystem';
 import GlobalUniformsMaterialsSystem from '@src/systems/GlobalUniformsMaterialsSystem/GlobalUniformsMaterialsSystem';
 import MeshSplitterOnCollisionSystem from '@src/systems/MeshSplitterOnCollisionSystem/MeshSplitterOnCollisionSystem';
 import MeshSplitterSystem from '@src/systems/MeshSplitterSystem/MeshSplitterSystem';
@@ -10,17 +12,17 @@ import PhysicsDebrisSystem from '@src/systems/PhysicsDebrisSystem/PhysicsDebrisS
 import PhysicsSystem from '@src/systems/PhysicsSystem';
 import RenderSystem from '@src/systems/RenderSystem';
 import SpawnTotemsSystem from '@src/systems/SpawnTotemsSystem/SpawnTotemsSystem';
-import SpawnTubeSegmentsSystem from '@src/systems/SpawnTubeSegmentsSystem/SpawnTubeSegmentsSystem';
+// import SpawnTubeSegmentsSystem from '@src/systems/SpawnTubeSegmentsSystem/SpawnTubeSegmentsSystem';
 import ThrowBallSystem from '@src/systems/ThrowBallSystem/ThrowBallSystem';
 import * as THREE from 'three';
 
 class MainScene extends GameScene {
   init(): void {
     // Ambient light for base illumination
-    this.add(new THREE.AmbientLight(0xffffff, 2));
+    this.add(new THREE.AmbientLight(0xffffff, 1));
 
     // Directional light attached to camera - moves with it, no distance decay
-    const cameraLight = new THREE.DirectionalLight(0xffffff, 3);
+    const cameraLight = new THREE.DirectionalLight(0xffffff, 2);
     cameraLight.position.set(0, 5, 5);
     this.world.camera.add(cameraLight);
     this.add(this.world.camera);
@@ -33,11 +35,13 @@ class MainScene extends GameScene {
       .addSystem(new PhysicsDebrisSystem())
       .addSystem(new GlobalUniformsMaterialsSystem())
       .addSystem(new CameraMovementSystem())
-      .addSystem(new SpawnTubeSegmentsSystem())
-      .addSystem(new CleanTubeSegmentsSystem())
+      // .addSystem(new SpawnTubeSegmentsSystem())
+      // .addSystem(new CleanTubeSegmentsSystem())
       .addSystem(new SpawnTotemsSystem())
       .addSystem(new ThrowBallSystem())
-      .addSystem(new CleanDynamicEntitiesBehindSystem());
+      .addSystem(new CleanDynamicEntitiesBehindSystem())
+      .addSystem(new CameraRailGenerationSystem())
+      .addSystem(new CorridorSystem());
   }
 }
 

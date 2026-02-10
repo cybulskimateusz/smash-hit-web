@@ -18,7 +18,6 @@ export interface SplittableGlassOptions {
   geometry?: THREE.BufferGeometry;
   material?: THREE.Material;
   splitAmount?: number;
-  isStatic?: boolean;
 }
 
 export default function createSplittableGlass(
@@ -29,7 +28,7 @@ export default function createSplittableGlass(
     position = new THREE.Vector3(0, 0, -2),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
-    geometry = new THREE.BoxGeometry(10, 15, 10),
+    geometry = new THREE.BoxGeometry(3, 5, 5),
     material = new GlassMaterial(),
     splitAmount = 15,
   } = options;

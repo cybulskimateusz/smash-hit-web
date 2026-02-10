@@ -1,16 +1,13 @@
+import Corridor from '@src/components/Corridor';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import TubePathManager from '@src/managers/TubePathManager';
-import * as PREFABS from '@src/prefabs';
-import { TUBE_DEFAULTS } from '@src/prefabs/createTubeSegment';
+import createSplittableGlass from '@src/prefabs/createSplittableGlass';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
 export default class SpawnTotemsSystem extends System {
-  private lastSpawnDistance = 0;
-  private readonly spawnInterval = 300;
-  private readonly spawnRadius = TUBE_DEFAULTS.radius * 0.5;
-  private readonly spawnAheadDistance = 100;
+  private processedCorridors: Entity[] = [];
+  private readonly totemsPerCorridor = 2;
 
   constructor() {
     super();
@@ -19,46 +16,34 @@ export default class SpawnTotemsSystem extends System {
 
   init(): void {}
 
-  update(time: number): void {
-    const distanceTraveled = time * TUBE_DEFAULTS.speed;
-    const spawnAtDistance = distanceTraveled + this.spawnAheadDistance;
-
-    while (this.lastSpawnDistance < spawnAtDistance) {
-      this.lastSpawnDistance += this.spawnInterval;
-      this.spawnObstacle(this.lastSpawnDistance);
-    }
+  update(): void {
+    this.query(Corridor).forEach(this.spawnTotemsInCorridor);
   }
 
-  private spawnObstacle(distance: number): void {
-    const pathManager = TubePathManager.instance;
+  private spawnTotemsInCorridor(entity: Entity): void {
+    if (this.processedCorridors.includes(entity)) return;
+    this.processedCorridors.push(entity);
 
-    // Get position and orientation along the tube path
-    const pathPosition = pathManager.getPositionAt(distance);
-    const tangent = pathManager.getTangentAt(distance);
+    const { curve, radius } = entity.get(Corridor)!;
 
-    // Create perpendicular vectors for placing obstacles around the tube
-    const up = new THREE.Vector3(0, 1, 0);
-    const right = new THREE.Vector3().crossVectors(tangent, up).normalize();
-    const realUp = new THREE.Vector3().crossVectors(right, tangent).normalize();
+    for (let i = 0; i < this.totemsPerCorridor; i++) {
+      const t = Math.random();
+      const position = curve.getPointAt(t);
+      const tangent = curve.getTangentAt(t);
 
-    // Spawn obstacles at random angles around the tube center
-    const angle1 = Math.random() * Math.PI * 2;
-    const angle2 = angle1 + Math.PI;
+      const up = new THREE.Vector3(0, 1, 0);
+      const right = new THREE.Vector3().crossVectors(tangent, up).normalize();
+      const realUp = new THREE.Vector3().crossVectors(right, tangent).normalize();
 
-    const offset1 = new THREE.Vector3()
-      .addScaledVector(right, Math.cos(angle1) * this.spawnRadius)
-      .addScaledVector(realUp, Math.sin(angle1) * this.spawnRadius);
+      const angle = Math.random() * Math.PI * 2;
+      const offset = new THREE.Vector3()
+        .addScaledVector(right, Math.cos(angle) * radius * 0.5)
+        .addScaledVector(realUp, Math.sin(angle) * radius * 0.5);
 
-    const offset2 = new THREE.Vector3()
-      .addScaledVector(right, Math.cos(angle2) * this.spawnRadius)
-      .addScaledVector(realUp, Math.sin(angle2) * this.spawnRadius);
-
-    PREFABS.createSplittableGlass(this.world, {
-      position: pathPosition.clone().add(offset1)
-    });
-    PREFABS.createSplittableGlass(this.world, {
-      position: pathPosition.clone().add(offset2)
-    });
+      createSplittableGlass(this.world, {
+        position: position.add(offset)
+      });
+    }
   }
 
   onEntityRemoved(_entity: Entity): void {}
