@@ -44,12 +44,15 @@ export default function createBall(
   const collider = new Collider();
   collider.desc = RAPIER.ColliderDesc.ball(radius);
 
+  const temporary =  new Temporary();
+  temporary.lifespan = 5000;
+
   entity
     .add(transform)
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
-    .add(new Temporary());
+    .add(temporary);
 
   return entity;
 }

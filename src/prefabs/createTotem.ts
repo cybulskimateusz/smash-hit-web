@@ -19,20 +19,34 @@ export interface TotemOptions {
   splitAmount?: number;
 }
 
-const TOTEM_DEFAULT_PROPS: TotemOptions = {
-  position:new THREE.Vector3(0, 0, -2),
-  rotation:new THREE.Euler(0, 0, 0),
-  scale:new THREE.Vector3(1, 1, 1),
-  geometry:new THREE.SphereGeometry(2.5, 32, 32),
-  material:new GlassMaterial(),
-  splitAmount:15,
+const TOTEM_GEOMETRIES = {
+  box: new THREE.BoxGeometry(3, 4, 3),
+  icosahedron: new THREE.IcosahedronGeometry(2, 1),
+  sphere: new THREE.IcosahedronGeometry(3, 1),
 };
+
+const TOTEM_DEFAULT_PROPS: TotemOptions = {
+  position: new THREE.Vector3(0, 0, -2),
+  rotation: new THREE.Euler(0, 0, 0),
+  scale: new THREE.Vector3(1, 1, 1),
+  material: new GlassMaterial(),
+  splitAmount: 15,
+};
+
+function getRandomGeometry(): THREE.BufferGeometry {
+  const geometries = Object.values(TOTEM_GEOMETRIES);
+  return geometries[Math.floor(Math.random() * geometries.length)];
+}
 
 export default function createTotem(
   world: World,
   options: TotemOptions = {}
 ): Entity {
-  const props = { ...TOTEM_DEFAULT_PROPS, ...options };
+  const props = {
+    ...TOTEM_DEFAULT_PROPS,
+    ...options,
+    geometry: options.geometry ?? getRandomGeometry(),
+  };
 
   const entity = world.createEntity();
 

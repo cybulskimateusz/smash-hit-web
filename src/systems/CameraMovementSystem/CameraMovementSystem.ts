@@ -4,7 +4,7 @@ import System from '@src/core/System';
 import ClockManager from '@src/managers/ClockManager';
 import autoBind from 'auto-bind';
 
-const CAMERA_SPEED = 0.04;
+const CAMERA_SPEED = 0.02;
 
 export default class extends System {
   private currentRail?: CameraRail;
