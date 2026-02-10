@@ -1,5 +1,6 @@
 import RAPIER from '@dimforge/rapier3d';
 import Corridor from '@src/components/Corridor';
+import FireflyMaterial from '@src/materials/FireflyMaterial/FireflyMaterial';
 import MetalPlateMaterial from '@src/materials/MetalPlateMateral/MetalPlateMateral';
 import * as THREE from 'three';
 
@@ -32,11 +33,37 @@ export interface TubeSegmentResult {
 export const CORRIDOR_DEFAULT_OPTIONS = {
   radius: 20,
   length: 5000,
-  radialSegments: 6,
+  radialSegments: 32,
   tubularSegments: 64,
   turnStrength: 0.4,
   segmentIndex: 0,
 };
+
+function createFireflies(curve: THREE.CubicBezierCurve3, radius: number, count = 50): THREE.Points {
+  const positions: number[] = [];
+  const offsets: number[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const t = Math.random();
+    const point = curve.getPointAt(t);
+
+    // Random offset within the corridor
+    const angle = Math.random() * Math.PI * 2;
+    const r = Math.random() * radius * 0.7;
+    point.x += Math.cos(angle) * r;
+    point.y += Math.sin(angle) * r;
+
+    positions.push(point.x, point.y, point.z);
+    offsets.push(Math.random());
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('aOffset', new THREE.Float32BufferAttribute(offsets, 1));
+
+  const material = new FireflyMaterial();
+  return new THREE.Points(geometry, material);
+}
 
 export default function createCorridor(
   world: World,
@@ -65,7 +92,8 @@ export default function createCorridor(
   const threeMesh = new ThreeMesh();
   threeMesh.mesh = mesh;
 
-  threeMesh.mesh.add(new THREE.PointLight(0x00ff00, 1, 10));
+  const fireflies = createFireflies(corridorProperties.curve, corridorProperties.radius);
+  threeMesh.mesh.add(fireflies);
   const rigidBody = new RigidBody();
   rigidBody.desc = RAPIER.RigidBodyDesc.fixed();
 

@@ -13,11 +13,15 @@ export const CAMERA_RAIL_SETTINGS = {
   length: 100
 };
 
+const SHARP_TURN_THRESHOLD = 1.0;
+const FORCED_SHARP_TURN_STRENGTH = 0.9;
+
 export default class extends System {
   private allowedRailsAmount = 5;
 
   private curveProperties = CAMERA_RAIL_SETTINGS;
   private rails: CameraRail[] = [];
+  private recentTurnStrengths: number[] = [];
 
   init(): void {
     autoBind(this);
@@ -46,17 +50,35 @@ export default class extends System {
   }
 
   private createRail() {
+    this.ensureRegularBending();
     const cameraRail = new CameraRail();
     cameraRail.rail = getCurve(this.curveProperties);
     this.rails.push(cameraRail);
 
     this.curveProperties.startPoint = cameraRail.rail.getPointAt(1);
     this.curveProperties.startTangent = cameraRail.rail.getTangentAt(1).normalize();
-    this.curveProperties.turnDirection = new THREE.Vector3(Math.random() - 0.5, 0, 0).normalize();
+    this.curveProperties.turnDirection = new THREE.Vector3(
+      Math.random() - 0.5,
+      0,
+      0
+    ).normalize();
 
     this.world
       .createEntity()
       .add(cameraRail);
+  }
+
+  // Neccessary to prevent user from looking behind the tunel.
+  private ensureRegularBending() {
+    const needsSharpTurn = this.recentTurnStrengths.length >= 3 &&
+      this.recentTurnStrengths.slice(-3).every(s => s < SHARP_TURN_THRESHOLD);
+
+    const turnStrength = needsSharpTurn
+      ? FORCED_SHARP_TURN_STRENGTH
+      : 0.6 + Math.random() * 0.6;
+
+    this.curveProperties.turnStrength = turnStrength;
+    this.recentTurnStrengths.push(turnStrength);
   }
 
   onEntityRemoved(_entity: Entity): void {}

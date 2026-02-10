@@ -1,5 +1,5 @@
 class Temporary {
-  lifespan = 5000;
+  lifespan = 10000;
 }
 
 export default Temporary;

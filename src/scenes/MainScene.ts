@@ -16,7 +16,7 @@ import * as THREE from 'three';
 class MainScene extends GameScene {
   init(): void {
     // Ambient light for base illumination
-    this.add(new THREE.AmbientLight(0xffffff, 1));
+    this.add(new THREE.AmbientLight(0xffffff, 0.5));
 
     // Directional light attached to camera - moves with it, no distance decay
     const cameraLight = new THREE.DirectionalLight(0xffffff, 1);
