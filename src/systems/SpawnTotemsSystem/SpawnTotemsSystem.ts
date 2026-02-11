@@ -1,7 +1,7 @@
 import Corridor from '@src/components/Corridor';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import createTotem from '@src/prefabs/createTotem';
+import createTotem from '@src/prefabs/entities/createTotem';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 

@@ -5,19 +5,18 @@ import getCurve from '@src/utils/three/getCurve/getCurve';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
+const MAX_TURN_THRESHOLD = 0.5;
+
 export const CAMERA_RAIL_SETTINGS = {
   startPoint: new THREE.Vector3(),
   startTangent: new THREE.Vector3(0, 0, -1).normalize(),
-  turnStrength: 0.8,
+  turnStrength: 0.1,
   turnDirection: new THREE.Vector3(Math.random() - 0.5, 0, 0).normalize(),
   length: 100
 };
 
-const SHARP_TURN_THRESHOLD = 1.0;
-const FORCED_SHARP_TURN_STRENGTH = 0.9;
-
 export default class extends System {
-  private allowedRailsAmount = 5;
+  private allowedRailsAmount = 10;
 
   private curveProperties = CAMERA_RAIL_SETTINGS;
   private rails: CameraRail[] = [];
@@ -71,11 +70,11 @@ export default class extends System {
   // Neccessary to prevent user from looking behind the tunel.
   private ensureRegularBending() {
     const needsSharpTurn = this.recentTurnStrengths.length >= 3 &&
-      this.recentTurnStrengths.slice(-3).every(s => s < SHARP_TURN_THRESHOLD);
+      this.recentTurnStrengths.slice(-3).every(turn => turn < MAX_TURN_THRESHOLD);
 
     const turnStrength = needsSharpTurn
-      ? FORCED_SHARP_TURN_STRENGTH
-      : 0.6 + Math.random() * 0.6;
+      ? MAX_TURN_THRESHOLD
+      : MAX_TURN_THRESHOLD + Math.random() * MAX_TURN_THRESHOLD;
 
     this.curveProperties.turnStrength = turnStrength;
     this.recentTurnStrengths.push(turnStrength);

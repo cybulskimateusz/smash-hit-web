@@ -2,7 +2,7 @@ import Player from '@src/components/Player';
 import System from '@src/core/System';
 import NetworkManager, { MESSAGE_TYPES } from '@src/managers/NetworkManager/NetworkManager';
 import type { BallThrownPayload } from '@src/managers/NetworkManager/types';
-import createBall from '@src/prefabs/createBall';
+import createBall from '@src/prefabs/entities/createBall';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 

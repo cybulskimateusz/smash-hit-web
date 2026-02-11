@@ -1,15 +1,14 @@
 import RAPIER from '@dimforge/rapier3d';
+import Collider from '@src/components/Collider';
+import MeshSplitter from '@src/components/MeshSplitter';
+import RigidBody from '@src/components/RigidBody';
+import ScoreReward from '@src/components/ScoreReward';
+import ThreeMesh from '@src/components/ThreeMesh';
+import Transform from '@src/components/Transform';
+import type Entity from '@src/core/Entity';
+import type World from '@src/core/World';
 import GlassMaterial from '@src/materials/GlassMaterial/GlassMaterial';
 import * as THREE from 'three';
-
-import Collider from '../components/Collider';
-import MeshSplitter from '../components/MeshSplitter';
-import RigidBody from '../components/RigidBody';
-import ScoreReward from '../components/ScoreReward';
-import ThreeMesh from '../components/ThreeMesh';
-import Transform from '../components/Transform';
-import type Entity from '../core/Entity';
-import type World from '../core/World';
 
 export interface TotemOptions {
   position?: THREE.Vector3;

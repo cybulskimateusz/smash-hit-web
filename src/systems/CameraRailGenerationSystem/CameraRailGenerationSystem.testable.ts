@@ -14,7 +14,7 @@ import CameraRailGenerationSystem from './CameraRailGenerationSystem';
 class CameraRailGenerationSystemTestable extends TestableScene {
   private testedSystem = new CameraRailGenerationSystem();
   private visibleHelpers = new Map<Entity, Entity[]>();
-  private traveler?: Entity;
+  public traveler?: Entity;
 
   init(): void {
     autoBind(this);
@@ -72,7 +72,7 @@ class CameraRailGenerationSystemTestable extends TestableScene {
     const curve = entity.get(CameraRail)!.rail;
 
     const controlPointMaterial = new THREE.MeshNormalMaterial();
-    const controlPointGeometry = new THREE.SphereGeometry(0.5);
+    const controlPointGeometry = new THREE.SphereGeometry(10);
 
     const helpers = curve.getPoints(4).map((point) => {
       const threeMesh = new ThreeMesh();

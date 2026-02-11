@@ -1,17 +1,16 @@
 import RAPIER from '@dimforge/rapier3d';
+import Collider from '@src/components/Collider';
 import Corridor from '@src/components/Corridor';
-import FireflyMaterial from '@src/materials/FireflyMaterial/FireflyMaterial';
+import RigidBody from '@src/components/RigidBody';
+import ThreeMesh from '@src/components/ThreeMesh';
+import Transform from '@src/components/Transform';
+import type Entity from '@src/core/Entity';
+import type World from '@src/core/World';
 import MetalPlateMaterial from '@src/materials/MetalPlateMateral/MetalPlateMateral';
+import createFireflies from '@src/prefabs/decorators/createFireflies';
 import * as THREE from 'three';
 
-import Collider from '../components/Collider';
-import RigidBody from '../components/RigidBody';
-import ThreeMesh from '../components/ThreeMesh';
-import Transform from '../components/Transform';
-import type Entity from '../core/Entity';
-import type World from '../core/World';
-
-export interface TubeSegmentOptions {
+export interface CorridorSegmentOptions {
   startPoint?: THREE.Vector3;
   startTangent?: THREE.Vector3;
   turnDirection?: THREE.Vector3;
@@ -21,16 +20,23 @@ export interface TubeSegmentOptions {
   tubularSegments?: number;
   turnStrength?: number;
   segmentIndex?: number;
+  material?: THREE.Material;
   curve: THREE.CubicBezierCurve3;
 }
 
-export interface TubeSegmentResult {
+export interface CorridorSegmentResult {
   entity: Entity;
   endPoint: THREE.Vector3;
   endTangent: THREE.Vector3;
 }
 
-export const CORRIDOR_DEFAULT_OPTIONS = {
+const createCorridorMaterial = () => {
+  const corridorMaterial = new MetalPlateMaterial();
+  corridorMaterial.side = THREE.BackSide;
+  return corridorMaterial;
+};
+
+export const CORRIDOR_DEFAULT_OPTIONS: Omit<CorridorSegmentOptions, 'curve'> = {
   radius: 20,
   length: 5000,
   radialSegments: 32,
@@ -39,35 +45,9 @@ export const CORRIDOR_DEFAULT_OPTIONS = {
   segmentIndex: 0,
 };
 
-function createFireflies(curve: THREE.CubicBezierCurve3, radius: number, count = 50): THREE.Points {
-  const positions: number[] = [];
-  const offsets: number[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const t = Math.random();
-    const point = curve.getPointAt(t);
-
-    // Random offset within the corridor
-    const angle = Math.random() * Math.PI * 2;
-    const r = Math.random() * radius * 0.7;
-    point.x += Math.cos(angle) * r;
-    point.y += Math.sin(angle) * r;
-
-    positions.push(point.x, point.y, point.z);
-    offsets.push(Math.random());
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('aOffset', new THREE.Float32BufferAttribute(offsets, 1));
-
-  const material = new FireflyMaterial();
-  return new THREE.Points(geometry, material);
-}
-
 export default function createCorridor(
   world: World,
-  options: TubeSegmentOptions
+  options: CorridorSegmentOptions
 ): Entity {
   const corridorProperties = { ...CORRIDOR_DEFAULT_OPTIONS, ...options };
 
@@ -80,9 +60,7 @@ export default function createCorridor(
     corridorProperties.radialSegments,
     false
   );
-
-  const material = new MetalPlateMaterial();
-  material.side = THREE.BackSide;
+  const material = options.material || createCorridorMaterial();
 
   const mesh = new THREE.Mesh(geometry, material);
 
@@ -92,8 +70,11 @@ export default function createCorridor(
   const threeMesh = new ThreeMesh();
   threeMesh.mesh = mesh;
 
-  const fireflies = createFireflies(corridorProperties.curve, corridorProperties.radius);
-  threeMesh.mesh.add(fireflies);
+  threeMesh.mesh.add(createFireflies({
+    curve: corridorProperties.curve,
+    radius: corridorProperties.radius!
+  }));
+
   const rigidBody = new RigidBody();
   rigidBody.desc = RAPIER.RigidBodyDesc.fixed();
 
@@ -106,7 +87,7 @@ export default function createCorridor(
 
   const corridor = new Corridor();
   corridor.curve = corridorProperties.curve;
-  corridor.radius = corridorProperties.radius;
+  corridor.radius = corridorProperties.radius!;
 
   entity
     .add(transform)

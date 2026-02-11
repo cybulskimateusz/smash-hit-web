@@ -1,14 +1,13 @@
 import RAPIER from '@dimforge/rapier3d';
+import Collider from '@src/components/Collider';
 import OwnedBy from '@src/components/OwnedBy';
+import RigidBody from '@src/components/RigidBody';
 import Temporary from '@src/components/Temporary';
+import ThreeMesh from '@src/components/ThreeMesh';
+import Transform from '@src/components/Transform';
+import type Entity from '@src/core/Entity';
+import type World from '@src/core/World';
 import * as THREE from 'three';
-
-import Collider from '../components/Collider';
-import RigidBody from '../components/RigidBody';
-import ThreeMesh from '../components/ThreeMesh';
-import Transform from '../components/Transform';
-import type Entity from '../core/Entity';
-import type World from '../core/World';
 
 export interface BallOptions {
   position?: THREE.Vector3;

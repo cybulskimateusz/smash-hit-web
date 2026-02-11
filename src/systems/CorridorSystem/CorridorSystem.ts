@@ -1,7 +1,7 @@
 import CameraRail from '@src/components/CameraRail';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import createCorridor from '@src/prefabs/createCorridor';
+import createCorridor, { type CorridorSegmentOptions } from '@src/prefabs/entities/createCorridor';
 import autoBind from 'auto-bind';
 
 /**
@@ -9,6 +9,7 @@ import autoBind from 'auto-bind';
  */
 export default class extends System {
   private railToCorridorMap = new Map<Entity, Entity>();
+  public corridorOptions: Omit<CorridorSegmentOptions, 'curve' | 'segmentIndex'> = {};
 
   init(): void {
     autoBind(this);
@@ -22,7 +23,11 @@ export default class extends System {
     if (this.railToCorridorMap.has(entity)) return;
 
     const { rail } = entity.get(CameraRail)!;
-    const corridor = createCorridor(this.world, { curve: rail, segmentIndex: this.railToCorridorMap.size });
+    const corridor = createCorridor(this.world, {
+      ...this.corridorOptions,
+      curve: rail,
+      segmentIndex: this.railToCorridorMap.size
+    });
     this.railToCorridorMap.set(entity, corridor);
   }
 
