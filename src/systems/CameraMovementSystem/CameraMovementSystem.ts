@@ -2,14 +2,20 @@ import CameraRail from '@src/components/CameraRail';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
 import ClockManager from '@src/managers/ClockManager';
+import GameSettingsManager from '@src/managers/GameSettingsManager';
 import autoBind from 'auto-bind';
+import { Vector3 } from 'three';
 
-const CAMERA_SPEED = 0.02;
+const DEFAULT_CAMERA_SPEED = 0.01;
+const CAMERA_VIEW_DISTANCE = 0.3;
 
 export default class extends System {
   private currentRail?: CameraRail;
+  private nextRail?: CameraRail;
+
   private currentRailLength = 0;
   private railStartedAt = ClockManager.instance.currentTime;
+  private cameraSpeed = DEFAULT_CAMERA_SPEED;
 
   init(): void {
     autoBind(this);
@@ -19,22 +25,37 @@ export default class extends System {
     this.updateProgress(time);
     this.scheduleRail();
     this.moveCamera();
+
+    this.cameraSpeed = DEFAULT_CAMERA_SPEED * GameSettingsManager.instance.difficulty;
   }
 
   private moveCamera() {
-    if (!this.currentRail) return;
-    const { progress, rail } = this.currentRail;
-    const position = rail.getPointAt(progress);
-    const tangent = rail.getTangentAt(progress);
+    if (!this.currentRail || !this.nextRail) return;
+  
+    const position = this.currentRail.rail.getPointAt(this.currentRail.progress);
+
+    const tangent = this.getCameraTangent();
 
     this.world.camera.position.copy(position);
     this.world.camera.lookAt(position.clone().add(tangent));
   }
 
+  private getCameraTangent(): Vector3 {
+    if (!this.currentRail) return new Vector3();
+
+    const isOnCurrentRail = this.currentRail.progress + CAMERA_VIEW_DISTANCE < 1;
+
+    if (isOnCurrentRail || !this.nextRail)
+      return this.currentRail.rail.getTangentAt(this.currentRail.progress + CAMERA_VIEW_DISTANCE);
+
+    // Makes sure the camera does not look at a wall when curves are too big.
+    return this.nextRail.rail.getTangentAt(this.currentRail.progress - (1 - CAMERA_VIEW_DISTANCE));
+  }
+
   private updateProgress(time: number) {
     if (!this.currentRail) return;
     const elapsed = time - this.railStartedAt;
-    const distance = elapsed * CAMERA_SPEED;
+    const distance = elapsed * this.cameraSpeed;
     const progress = Math.min(distance / this.currentRailLength, 1);
     this.currentRail.progress = progress;
     if (progress >= 1) this.currentRail = undefined;
@@ -47,6 +68,8 @@ export default class extends System {
     if (!availableEntities.length) return;
 
     this.currentRail = availableEntities[0].get(CameraRail)!;
+    this.nextRail = availableEntities[1].get(CameraRail)!;
+
     this.currentRailLength = this.currentRail.rail.getLength();
     this.railStartedAt = ClockManager.instance.currentTime;
   }
