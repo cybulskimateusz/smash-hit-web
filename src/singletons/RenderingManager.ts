@@ -15,6 +15,23 @@ interface RenderingManagerProps {
  * the first one is stored as a global uniform
  */
 class RenderingManager extends THREE.WebGLRenderer {
+  private static _instance: RenderingManager;
+
+  static init(props: RenderingManagerProps) {
+    if (RenderingManager._instance)
+      throw new Error('RenderingManager is already initialized');
+
+    RenderingManager._instance = new RenderingManager(props);
+    return RenderingManager._instance;
+  }
+
+  static get instance() {
+    if (!RenderingManager._instance)
+      throw new Error('RenderingManager is not initialized. Call RenderingManager.init() first.');
+
+    return RenderingManager._instance;
+  }
+
   private backgroundTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     samples: 4,
     minFilter: THREE.LinearFilter,
@@ -24,23 +41,23 @@ class RenderingManager extends THREE.WebGLRenderer {
   public scene?: GameScene;
   public clockManager = ClockManager.instance;
 
-  constructor(private props: RenderingManagerProps) {
+  private constructor(private props: RenderingManagerProps) {
     super({
       antialias: true,
       powerPreference: 'high-performance',
       canvas: props.canvas,
     });
     autoBind(this);
-    
+
     this.onResize();
     this.addEventListeners();
 
     this.setAnimationLoop(this.animationLoop);
 
-    GlobalUniformsManager.instance.uniforms.gBackgroundSampler.value = 
+    GlobalUniformsManager.instance.uniforms.gBackgroundSampler.value =
     this.backgroundTarget.texture;
 
-    GlobalUniformsManager.instance.uniforms.gTime.value = 
+    GlobalUniformsManager.instance.uniforms.gTime.value =
     this.clockManager.currentTime;
   }
 

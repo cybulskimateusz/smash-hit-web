@@ -1,6 +1,6 @@
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
-import GlobalUniformsManager from '@src/managers/GlobalUniformsManager';
+import GlobalUniformsManager from '@src/singletons/GlobalUniformsManager';
 import TestableScene from '@testable/TestableScene';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';

@@ -1,5 +1,5 @@
 import Transform from '@src/components/Transform';
-import GameSettingsManager from '@src/managers/GameSettingsManager';
+import GameSettingsManager from '@src/singletons/GameSettingsManager';
 import TestableScene from '@testable/TestableScene';
 import { GUI } from 'dat.gui';
 import * as THREE from 'three';

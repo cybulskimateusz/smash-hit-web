@@ -13,6 +13,13 @@ interface IndexedWork {
     onFinished?: () => void;
 }
 
+/**
+ * System splits expensive work across frames.
+ * 
+ * worksPerFrame - decides how many works can be used by one animation frame.
+ * 
+ * queueWork() - schedules work to be run in next available frame.
+ */
 abstract class QueuedWorkSystem extends System {
     abstract readonly worksPerFrame: number;
     private queuedWorks: IndexedWork[] = [];

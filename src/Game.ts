@@ -1,6 +1,6 @@
 import GameScene from '@src/components/GameScene';
 import World from '@src/core/World';
-import RenderingManager from '@src/managers/RenderingManager';
+import RenderingManager from '@src/singletons/RenderingManager';
 import autoBind from 'auto-bind';
 
 declare global {
@@ -21,7 +21,7 @@ class Game {
     autoBind(this);
 
     this.scene = new scene(this.world, canvas);
-    this.renderer = new RenderingManager({
+    this.renderer = RenderingManager.init({
       canvas: canvas,
       onUpdate: this.onUpdate,
     });

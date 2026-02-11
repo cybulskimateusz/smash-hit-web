@@ -1,4 +1,4 @@
-import AssetManager from '@src/managers/AssetManager/AssetManager';
+import AssetManager from '@src/singletons/AssetManager/AssetManager';
 import { MeshStandardMaterial } from 'three';
 
 class MetalPlateMaterial extends MeshStandardMaterial {

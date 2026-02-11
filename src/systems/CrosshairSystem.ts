@@ -1,5 +1,5 @@
 import System from '@src/core/System';
-import NetworkManager, { MESSAGE_TYPES } from '@src/managers/NetworkManager/NetworkManager';
+import NetworkManager, { MESSAGE_TYPES } from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 interface AimPayload {

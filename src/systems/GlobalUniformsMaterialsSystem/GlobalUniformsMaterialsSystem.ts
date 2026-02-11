@@ -1,7 +1,7 @@
 import ThreeMesh from '@src/components/ThreeMesh';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import GlobalUniformsManager, { type GlobalUniform } from '@src/managers/GlobalUniformsManager';
+import GlobalUniformsManager, { type GlobalUniform } from '@src/singletons/GlobalUniformsManager';
 import type { ShaderMaterial } from 'three';
 
 class GlobalUniformsMaterialsSystem extends System {

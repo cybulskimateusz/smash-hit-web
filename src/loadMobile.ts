@@ -1,4 +1,4 @@
-import NetworkManager, { MESSAGE_TYPES } from './managers/NetworkManager/NetworkManager';
+import NetworkManager, { MESSAGE_TYPES } from './singletons/NetworkManager/NetworkManager';
 
 const createUI = () => {
   const container = document.createElement('div');

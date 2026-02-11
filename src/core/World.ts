@@ -1,4 +1,4 @@
-import ClockManager from '@src/managers/ClockManager';
+import ClockManager from '@src/singletons/ClockManager';
 import * as THREE from 'three';
 
 import Entity from './Entity';

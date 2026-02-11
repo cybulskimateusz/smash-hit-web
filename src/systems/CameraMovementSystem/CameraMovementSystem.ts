@@ -1,8 +1,8 @@
 import CameraRail from '@src/components/CameraRail';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import ClockManager from '@src/managers/ClockManager';
-import GameSettingsManager from '@src/managers/GameSettingsManager';
+import ClockManager from '@src/singletons/ClockManager';
+import GameSettingsManager from '@src/singletons/GameSettingsManager';
 import autoBind from 'auto-bind';
 import { Vector3 } from 'three';
 

@@ -2,8 +2,8 @@ import NetworkIdentity from '@src/components/NetworkIdentity';
 import Player from '@src/components/Player';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import NetworkManager, { MESSAGE_TYPES } from '@src/managers/NetworkManager/NetworkManager';
-import type { PlayerJoinedPayload } from '@src/managers/NetworkManager/types';
+import NetworkManager, { MESSAGE_TYPES } from '@src/singletons/NetworkManager/NetworkManager';
+import type { PlayerJoinedPayload } from '@src/singletons/NetworkManager/types';
 import autoBind from 'auto-bind';
 
 export default class PlayerRegistrationSystem extends System {

@@ -5,12 +5,11 @@ import ThreeObject from '@src/components/ThreeMesh';
 import ThreeMesh from '@src/components/ThreeMesh';
 import Transform from '@src/components/Transform';
 import type Entity from '@src/core/Entity'; 
+import QueuedWorkSystem from '@src/core/QueuedWorkSystem';
 import getExplosionMap3D from '@src/utils/three/getExplosionMap3D/getExplosionMap3D';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
-
-import QueuedWorkSystem from '../QueuedWorkSystem/QueuedWorkSystem';
 
 interface MeshSplitterDebrie {
   reference: Entity;

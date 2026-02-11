@@ -5,7 +5,7 @@ import Player from '@src/components/Player';
 import ScoreReward from '@src/components/ScoreReward';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import GameSettingsManager from '@src/managers/GameSettingsManager';
+import GameSettingsManager from '@src/singletons/GameSettingsManager';
 
 export default class ScoringSystem extends System {
   update(): void {

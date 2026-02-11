@@ -1,4 +1,4 @@
-import GlobalUniformsManager from '@src/managers/GlobalUniformsManager';
+import GlobalUniformsManager from '@src/singletons/GlobalUniformsManager';
 import * as THREE from 'three';
 
 import fragmentShader from './FireflyMaterial.frag';

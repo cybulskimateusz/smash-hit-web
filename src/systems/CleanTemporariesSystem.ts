@@ -1,7 +1,7 @@
 import Temporary from '@src/components/Temporary';
 import type Entity from '@src/core/Entity';
 import System from '@src/core/System';
-import ClockManager from '@src/managers/ClockManager';
+import ClockManager from '@src/singletons/ClockManager';
 import autoBind from 'auto-bind';
 
 interface TimedEntity {
