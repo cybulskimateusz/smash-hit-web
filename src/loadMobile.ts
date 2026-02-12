@@ -1,4 +1,5 @@
-import NetworkManager, { MESSAGE_TYPES } from './singletons/NetworkManager/NetworkManager';
+import MESSAGE_TYPES from './singletons/NetworkManager/MESSAGE_TYPES';
+import WebRTCManager from './singletons/NetworkManager/NetworkManager';
 
 const createUI = () => {
   const container = document.createElement('div');
@@ -127,7 +128,13 @@ const createUI = () => {
 const loadMobile = async () => {
   const ui = createUI();
 
-  NetworkManager.instance.connect();
+  const rtc = WebRTCManager.instance;
+
+  rtc.onOpen(() => {
+    rtc.send(MESSAGE_TYPES.PLAYER_JOINED, {
+      playerId: crypto.randomUUID(),
+    });
+  });
 
   let aimX = 0;
   let aimY = 0;
@@ -222,9 +229,9 @@ const loadMobile = async () => {
 
     // Throttle network updates (max 15/sec)
     const now = Date.now();
-    if (NetworkManager.instance.isConnected && now - lastSendTime > 66) {
+    if (rtc.isConnected && now - lastSendTime > 66) {
       lastSendTime = now;
-      NetworkManager.instance.send(MESSAGE_TYPES.AIM_UPDATE, {
+      rtc.send(MESSAGE_TYPES.AIM_UPDATE, {
         position: [aimX, aimY],
       });
     }
@@ -244,12 +251,12 @@ const loadMobile = async () => {
   ui.shootBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
 
-    if (!NetworkManager.instance.isConnected) {
+    if (!rtc.isConnected) {
       ui.status.textContent = 'Not connected!';
       return;
     }
 
-    NetworkManager.instance.send(MESSAGE_TYPES.BALL_THROWN, {
+    rtc.send(MESSAGE_TYPES.BALL_THROWN, {
       direction: [aimX, aimY, -1],
     });
 
@@ -267,7 +274,7 @@ const loadMobile = async () => {
 
   // Connection status
   const checkConnection = () => {
-    if (NetworkManager.instance.isConnected) {
+    if (rtc.isConnected) {
       ui.status.textContent = 'Connected';
       ui.status.style.background = 'rgba(0,150,0,0.5)';
     } else {

@@ -1,5 +1,6 @@
 import System from '@src/core/System';
-import NetworkManager, { MESSAGE_TYPES } from '@src/singletons/NetworkManager/NetworkManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import WebRTCManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 interface AimPayload {
@@ -18,7 +19,7 @@ export default class CrosshairSystem extends System {
   init(): void {
     autoBind(this);
     this.createCrosshair();
-    NetworkManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
+    WebRTCManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
   }
 
   private createCrosshair() {

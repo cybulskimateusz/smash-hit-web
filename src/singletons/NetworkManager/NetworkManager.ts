@@ -1,97 +1,127 @@
-import MESSAGE_TYPES from './MESSAGE_TYPES';
+import autoBind from 'auto-bind';
 
-type MessageHandler = (payload: unknown) => void;
+import RoomManager from './RoomManager';
+import WebSocketManager from './WebSocketManager';
 
-interface NetworkMessage {
-  type: string;
-  payload: unknown;
-}
+type GameMessageHandler = (payload: unknown) => void;
 
 class NetworkManager {
   static instance = new NetworkManager();
 
-  private socket?: WebSocket;
-  private handlers = new Map<string, Set<MessageHandler>>();
-  private _isConnected = false;
-  private _playerId?: string;
+  private peerConnection = new RTCPeerConnection({
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  });
 
-  get isConnected() { return this._isConnected; }
-  get playerId() { return this._playerId; }
+  private dataChannel?: RTCDataChannel;
+  private gameHandlers = new Map<string, Set<GameMessageHandler>>();
+  private openHandlers = new Set<() => void>();
 
-  private buildWsUrl(): string {
-    const port = import.meta.env.VITE_WS_PORT || '3002';
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.hostname}:${port}`;
+  get isConnected() {
+    return this.dataChannel?.readyState === 'open';
   }
 
-  connect(url?: string) {
-    if (this.socket) return;
+  constructor() {
+    autoBind(this);
 
-    const wsUrl = url ?? this.buildWsUrl();
-    console.log('[Network] Connecting to:', wsUrl);
-    this.socket = new WebSocket(wsUrl);
+    this.peerConnection.onicecandidate = this.onIceCandidate;
+    this.peerConnection.ondatachannel = this.onDataChannel;
 
-    this.socket.onopen = () => {
-      this._isConnected = true;
-      console.log('[Network] Connected!');
+    this.listenToSignaling();
+
+    if (!RoomManager.instance.isHost) {
+      this.setupDataChannel(this.peerConnection.createDataChannel('game'));
+      this.createOffer();
+    }
+  }
+
+  public send(type: string, payload: unknown) {
+    if (this.dataChannel?.readyState === 'open') {
+      this.dataChannel.send(JSON.stringify({ type, payload }));
+    }
+  }
+
+  public on(type: string, handler: GameMessageHandler) {
+    if (!this.gameHandlers.has(type))
+      this.gameHandlers.set(type, new Set());
+
+    this.gameHandlers.get(type)!.add(handler);
+
+    return { cancel: () => this.gameHandlers.get(type)?.delete(handler) };
+  }
+
+  public onOpen(handler: () => void) {
+    this.openHandlers.add(handler);
+
+    if (this.isConnected) handler();
+
+    return { cancel: () => this.openHandlers.delete(handler) };
+  }
+
+  private listenToSignaling() {
+    WebSocketManager.instance.on('offer', this.onOffer);
+    WebSocketManager.instance.on('answer', this.onAnswer);
+    WebSocketManager.instance.on('candidate', this.onCandidate);
+  }
+
+  private onIceCandidate(event: RTCPeerConnectionIceEvent) {
+    if (!event.candidate) return;
+
+    WebSocketManager.instance.send({
+      type: 'candidate',
+      payload: event.candidate
+    });
+  }
+
+  private onDataChannel(event: RTCDataChannelEvent) {
+    this.setupDataChannel(event.channel);
+  }
+
+  private setupDataChannel(channel: RTCDataChannel) {
+    this.dataChannel = channel;
+
+    this.dataChannel.onopen = () => {
+      console.log('[NetworkManager] Data channel open');
+      this.openHandlers.forEach(handler => handler());
     };
 
-    this.socket.onclose = () => {
-      this._isConnected = false;
-      this.socket = undefined;
+    this.dataChannel.onclose = () => {
+      console.log('[NetworkManager] Data channel closed');
     };
 
-    this.socket.onerror = (error) => {
-      console.error('[Network] Error:', error);
-    };
-
-    this.socket.onmessage = (event) => {
+    this.dataChannel.onmessage = (event) => {
       try {
-        const message: NetworkMessage = JSON.parse(event.data);
-        console.log('[Network] Received:', message.type);
-        this.storeNewPlayer(message);
-        this.handlers.get(message.type)?.forEach(handler => handler(message.payload));
+        const { type, payload } = JSON.parse(event.data);
+        this.gameHandlers.get(type)?.forEach(handler => handler(payload));
       } catch (err) {
-        console.error('[Network] Failed to parse message:', err);
+        console.error('[NetworkManager] Failed to parse message:', err);
       }
     };
   }
 
-  private storeNewPlayer(message: NetworkMessage) {
-    if (message.type !== MESSAGE_TYPES.PLAYER_WELCOME) return;
-
-    const payload = message.payload as { playerId: string };
-    this._playerId = payload.playerId;
-    console.log('[Network] Assigned player ID:', this._playerId);
+  private async createOffer() {
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+    WebSocketManager.instance.send({ type: 'offer', payload: offer });
   }
 
-  disconnect() {
-    this.socket?.close();
-    this.socket = undefined;
-    this._isConnected = false;
+  private async onOffer(event: SignalingEvent) {
+    const message = event as SignalingMessage<'offer'>;
+
+    await this.peerConnection.setRemoteDescription(new RTCSessionDescription(message.payload));
+    const answer = await this.peerConnection.createAnswer();
+    await this.peerConnection.setLocalDescription(answer);
+    WebSocketManager.instance.send({ type: 'answer', payload: answer });
   }
 
-  on(type: string, handler: MessageHandler) {
-    if (!this.handlers.has(type)) {
-      this.handlers.set(type, new Set());
-    }
-    this.handlers.get(type)!.add(handler);
-    return () => this.off(type, handler);
+  private async onAnswer(event: SignalingEvent) {
+    const message = event as SignalingMessage<'answer'>;
+    await this.peerConnection.setRemoteDescription(new RTCSessionDescription(message.payload));
   }
 
-  off(type: string, handler: MessageHandler) {
-    this.handlers.get(type)?.delete(handler);
-  }
-
-  send(type: string, payload: unknown) {
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.warn('[Network] Cannot send - not connected');
-      return;
-    }
-    const message = JSON.stringify({ type, payload });
-    this.socket.send(message);
+  private async onCandidate(event: SignalingEvent) {
+    const message = event as SignalingMessage<'candidate'>;
+    await this.peerConnection.addIceCandidate(new RTCIceCandidate(message.payload));
   }
 }
 
-export { MESSAGE_TYPES };
 export default NetworkManager;
