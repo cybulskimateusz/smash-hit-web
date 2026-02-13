@@ -1,5 +1,6 @@
 import autoBind from 'auto-bind';
 
+import MESSAGE_TYPES from './MESSAGE_TYPES';
 import RoomManager from './RoomManager';
 import WebSocketManager from './WebSocketManager';
 
@@ -7,6 +8,9 @@ type GameMessageHandler = (payload: unknown) => void;
 
 class NetworkManager {
   static instance = new NetworkManager();
+
+  static playerID = crypto.randomUUID();
+  static connectedPlayers: PlayerJoinedPayload[] = [];
 
   private peerConnection = new RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -37,6 +41,18 @@ class NetworkManager {
       this.setupDataChannel(this.peerConnection.createDataChannel('game'));
       this.createOffer();
     }
+
+    this.on(
+      MESSAGE_TYPES.PLAYER_JOINED,
+      payload => NetworkManager.connectedPlayers.push(payload as PlayerJoinedPayload)
+    );
+    this.on(
+      MESSAGE_TYPES.PLAYER_LEFT,
+      payload => 
+        NetworkManager.connectedPlayers = NetworkManager.connectedPlayers.filter(connectedPlayer =>
+          connectedPlayer.playerId !== (payload as PlayerLeftPayload).playerId
+        )
+    );
   }
 
   public send(type: string, payload: unknown) {

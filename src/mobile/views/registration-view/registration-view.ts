@@ -2,8 +2,8 @@ import './registration-view.scss';
 
 import View from '@src/abstracts/View';
 import COPY from '@src/COPY';
-import MESSAGE_TYPES from '@src/mobile/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/mobile/singletons/NetworkManager/NetworkManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 
 const COLORS = [
   '#e74c3c',
@@ -61,7 +61,7 @@ export default class RegistrationView extends View {
 
     NetworkManager.instance.onOpen(() => {
       NetworkManager.instance.send(MESSAGE_TYPES.PLAYER_JOINED, {
-        playerId: crypto.randomUUID(),
+        playerId: NetworkManager.playerID,
         color: this.selectedColor
       });
     });

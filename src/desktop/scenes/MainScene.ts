@@ -13,8 +13,9 @@ import PhysicsDebrisSystem from '@desktop/systems/PhysicsDebrisSystem/PhysicsDeb
 import PhysicsSystem from '@desktop/systems/PhysicsSystem';
 import PlayerRegistrationSystem from '@desktop/systems/PlayerRegistrationSystem';
 import RenderSystem from '@desktop/systems/RenderSystem';
+import ScoringSystem from '@desktop/systems/ScoringSystem';
 import SpawnTotemsSystem from '@desktop/systems/SpawnTotemsSystem/SpawnTotemsSystem';
-import ThrowBallSystem from '@desktop/systems/ThrowBallSystem/ThrowBallSystem';
+import ThrowBallSystem from '@src/desktop/systems/ThrowBallSystem';
 import * as THREE from 'three';
 
 class MainScene extends GameScene {
@@ -33,7 +34,8 @@ class MainScene extends GameScene {
       .addSystem(new CameraRailGenerationSystem())
       .addSystem(new CorridorSystem())
       .addSystem(new CleanTemporariesSystem())
-      .addSystem(new PlayerRegistrationSystem());
+      .addSystem(new PlayerRegistrationSystem())
+      .addSystem(new ScoringSystem());
 
     this.addLights();
   }

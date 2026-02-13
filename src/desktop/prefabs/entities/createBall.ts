@@ -12,7 +12,7 @@ import * as THREE from 'three';
 export interface BallOptions {
   position?: THREE.Vector3;
   radius?: number;
-  color?: number;
+  color?: THREE.ColorRepresentation;
   owner?: Entity;
 }
 

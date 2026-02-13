@@ -8,7 +8,7 @@ class RoomManager {
   private _roomID: string | null;
   public get roomID() {return this._roomID;}
 
-  public readonly isHost: boolean;
+  public readonly isHost;
 
   private _qrCodeCanvas: HTMLCanvasElement = document.createElement('canvas');
   public get qrCodeCanvas() {return this._qrCodeCanvas;}

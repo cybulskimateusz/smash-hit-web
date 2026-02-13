@@ -1,12 +1,12 @@
 import Player from '@desktop/components/Player';
 import System from '@desktop/core/System';
 import createBall from '@desktop/prefabs/entities/createBall';
-import MESSAGE_TYPES from '@src/mobile/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/mobile/singletons/NetworkManager/NetworkManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
-import PhysicsSystem from '../PhysicsSystem';
+import PhysicsSystem from './PhysicsSystem';
 
 export default class extends System {
   private readonly ballSpeed = 100;
@@ -39,7 +39,11 @@ export default class extends System {
       const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
       const velocity = worldDirection.multiplyScalar(this.ballSpeed);
 
-      const entity = createBall(this.world, { position: spawnPosition, owner });
+      const entity = createBall(this.world, {
+        position: spawnPosition,
+        owner,
+        color: owner?.get(Player)?.color,
+      });
 
       requestAnimationFrame(() => {
         this.physicsSystem?.setVelocity(entity, velocity);

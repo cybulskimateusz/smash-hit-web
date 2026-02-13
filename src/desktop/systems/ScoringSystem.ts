@@ -6,6 +6,8 @@ import ScoreReward from '@desktop/components/ScoreReward';
 import type Entity from '@desktop/core/Entity';
 import System from '@desktop/core/System';
 import GameSettingsManager from '@desktop/singletons/GameSettingsManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 
 export default class ScoringSystem extends System {
   update(): void {
@@ -34,6 +36,10 @@ export default class ScoringSystem extends System {
 
     player.score += reward.points;
     GameSettingsManager.instance.incrementDifficultyForScore(player.score);
+    NetworkManager.instance.send(MESSAGE_TYPES.SCORE_UPDATED, {
+      playerId: player.id,
+      score: player.score,
+    });
   }
 
   private getOtherHandle(collider: Collider): number {

@@ -1,6 +1,6 @@
 import View from '@src/abstracts/View';
 import COPY from '@src/COPY';
-import NetworkManager from '@src/mobile/singletons/NetworkManager/NetworkManager';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 
 const QR_CODE = NetworkManager.instance.qrCodeCanvas;
 QR_CODE.className = 'qr-code-view__qr-code';

@@ -1,8 +1,8 @@
 import './qr-code-view.scss';
 
 import View from '@src/abstracts/View';
-import MESSAGE_TYPES from '@src/mobile/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/mobile/singletons/NetworkManager/NetworkManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 import COMPONENTS from './qr-code-view.components';

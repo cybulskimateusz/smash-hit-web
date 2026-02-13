@@ -1,9 +1,9 @@
 import './game-view.scss';
 
 import View from '@src/abstracts/View';
-import MESSAGE_TYPES from '@src/mobile/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/mobile/singletons/NetworkManager/NetworkManager';
 import OrientationManager from '@src/mobile/singletons/OrientationManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
+import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 import COMPONENTS from './game-view.components';
@@ -47,7 +47,10 @@ export default class extends View {
 
     if (this.network.isConnected && now - this.lastSendTime > AIM_SEND_INTERVAL) {
       this.lastSendTime = now;
-      this.network.send(MESSAGE_TYPES.AIM_UPDATE, { position: [aimX, aimY] });
+      this.network.send(MESSAGE_TYPES.AIM_UPDATE, {
+        position: [aimX, aimY],
+        playerId: NetworkManager.playerID
+      });
     }
   }
 
@@ -58,6 +61,7 @@ export default class extends View {
 
     this.network.send(MESSAGE_TYPES.BALL_THROWN, {
       direction: [this.orientation.aimX, this.orientation.aimY, -1],
+      playerId: NetworkManager.playerID,
     });
   }
 }
