@@ -1,3 +1,4 @@
+import isMobile from '@src/utils/isMobile';
 import QRCode from 'qrcode';
 
 const ROOM_SEARCH_PARAM = 'room';
@@ -8,15 +9,14 @@ class RoomManager {
   private _roomID: string | null;
   public get roomID() {return this._roomID;}
 
-  public readonly isHost;
+  public readonly isHost = !isMobile();
 
   private _qrCodeCanvas: HTMLCanvasElement = document.createElement('canvas');
   public get qrCodeCanvas() {return this._qrCodeCanvas;}
 
   constructor() {
     this._roomID = this.getRoomID();
-    this.isHost = !this._roomID;
-    if (!this._roomID) this.createRoom();
+    if (this.isHost && !this.roomID) this.createRoom();
   }
 
   private getRoomID(): string | null {
