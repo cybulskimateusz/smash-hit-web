@@ -31,6 +31,7 @@
     "jest": "^30.2.0",
     "jiti": "^2.6.1",
     "lint-staged": "^16.2.7",
+    "sass-embedded": "^1.97.3",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.53.1",
@@ -46,6 +47,7 @@
   "dependencies": {
     "@dimforge/rapier3d": "^0.19.3",
     "@types/express": "^5.0.6",
+    "@types/pug": "^2.0.10",
     "auto-bind": "^5.0.1",
     "d3-delaunay": "^6.0.4",
     "dat.gui": "^0.7.9",
@@ -53,6 +55,7 @@
     "glsl-noise": "^0.0.0",
     "glslify": "^7.1.1",
     "gsap": "^3.14.2",
+    "pug": "^3.0.3",
     "qrcode": "^1.5.4",
     "quickhull3d": "^3.1.2",
     "reflect-metadata": "^0.2.2",

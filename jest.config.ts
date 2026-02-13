@@ -6,6 +6,8 @@ const config: Config = {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
+    '^@desktop/(.*)$': '<rootDir>/src/desktop/$1',
+    '^@mobile/(.*)$': '<rootDir>/src/mobile/$1',
     '^@testable/(.*)$': '<rootDir>/testable/$1',
   },
   transform: {

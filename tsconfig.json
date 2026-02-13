@@ -29,6 +29,8 @@
     "baseUrl": ".",
     "paths": {
       "@src/*": ["src/*"],
+      "@desktop/*": ["src/desktop/*"],
+      "@mobile/*": ["src/mobile/*"],
       "@testable/*": ["testable/*"],
     }
   },

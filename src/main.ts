@@ -1,8 +1,4 @@
-import './style.css';
+import isMobile from './utils/isMobile';
 
-import loadDesktop from './loadDesktop';
-import loadMobile from './loadMobile';
-import isMobile from './utils/device/isMobile';
-
-if (isMobile()) loadMobile();
-else loadDesktop();
+if (isMobile()) import('@mobile/index').then(module => module.default);
+else import('@desktop/index').then(module => module.default);

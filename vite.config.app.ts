@@ -12,6 +12,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@src': path.resolve(__dirname, 'src'),
+      '@desktop': path.resolve(__dirname, 'src/desktop'),
+      '@mobile': path.resolve(__dirname, 'src/mobile'),
       '@testable': path.resolve(__dirname, 'testable'),
     },
   },
