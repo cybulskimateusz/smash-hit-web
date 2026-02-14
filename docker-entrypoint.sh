@@ -6,4 +6,4 @@ if [ -n "$WS_URL" ]; then
   find /app/dist -name '*.js' -exec sed -i "s|__WS_URL_PLACEHOLDER__|${WS_URL}|g" {} +
 fi
 
-exec serve -s dist -l 3000
+exec serve -s dist -l ${PORT:-8080}

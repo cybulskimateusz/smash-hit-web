@@ -8,7 +8,7 @@ resource "google_cloud_run_v2_service" "server" {
       image = var.server_image
 
       ports {
-        container_port = 3002
+        container_port = 8080
       }
 
       resources {
@@ -38,7 +38,7 @@ resource "google_cloud_run_v2_service" "app" {
       image = var.app_image
 
       ports {
-        container_port = 3000
+        container_port = 8080
       }
 
       env {
