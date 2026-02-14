@@ -3,7 +3,7 @@ name: Deploy to GCP
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   REGION: europe-central2
