@@ -38,13 +38,17 @@ jobs:
         working-directory: terraform
         run: terraform init
 
-      - name: Terraform Apply (infrastructure only)
+      - name: Terraform Apply (registry & APIs only)
         working-directory: terraform
         run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="app_image=us-docker.pkg.dev/cloudrun/container/hello" \
-            -var="server_image=us-docker.pkg.dev/cloudrun/container/hello"
+            -var="app_image=placeholder" \
+            -var="server_image=placeholder" \
+            -target=google_project_service.run \
+            -target=google_project_service.artifact_registry \
+            -target=google_project_service.iam \
+            -target=google_artifact_registry_repository.docker
 
   deploy:
     name: Build & Deploy
