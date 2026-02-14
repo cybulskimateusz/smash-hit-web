@@ -3,7 +3,6 @@ import CameraMovementSystem from '@desktop/systems/CameraMovementSystem/CameraMo
 import CameraRailGenerationSystem from '@desktop/systems/CameraRailGenerationSystem/CameraRailGenerationSystem';
 import CleanTemporariesSystem from '@desktop/systems/CleanTemporariesSystem';
 import CorridorSystem from '@desktop/systems/CorridorSystem/CorridorSystem';
-import CrosshairSystem from '@desktop/systems/CrosshairSystem';
 import GlobalUniformsMaterialsSystem from
   '@desktop/systems/GlobalUniformsMaterialsSystem/GlobalUniformsMaterialsSystem';
 import MeshSplitterOnCollisionSystem from
@@ -30,7 +29,6 @@ class MainScene extends GameScene {
       .addSystem(new CameraMovementSystem())
       .addSystem(new SpawnTotemsSystem())
       .addSystem(new ThrowBallSystem())
-      .addSystem(new CrosshairSystem())
       .addSystem(new CameraRailGenerationSystem())
       .addSystem(new CorridorSystem())
       .addSystem(new CleanTemporariesSystem())

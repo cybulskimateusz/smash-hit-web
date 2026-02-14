@@ -4,10 +4,14 @@ import SVG_CROSSHAIR from '@desktop/assets/svg/chrosshair.svg?raw';
 import View from '@src/abstracts/View';
 import MainScene from '@src/desktop/scenes/MainScene';
 import AssetManager from '@src/desktop/singletons/AssetManager/AssetManager';
+import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
+import autoBind from 'auto-bind';
 
-const CROSSHAIR_ID_PREFIX = 'crosshair_';
-export const getCrosshair = (playerId: string) => document.getElementById(`${CROSSHAIR_ID_PREFIX}${playerId}`);
+interface AimPayload {
+  position: [number, number];
+  playerId: string;
+}
 
 export default class extends View {
   protected _view = View.createElement('section', {
@@ -17,12 +21,16 @@ export default class extends View {
   private canvas = View.createElement('canvas', {
     className: 'game-view__canvas'
   });
+
+  private crosshairs = new Map<string, HTMLElement>();
     
   constructor() {
     super();
+    autoBind(this);
 
     this.loadGame();
     this.createCrosshairs();
+    NetworkManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
   }
 
   private async loadGame() {
@@ -36,11 +44,26 @@ export default class extends View {
     NetworkManager.connectedPlayers.forEach(player => {
       const element = View.createElement('div', {
         className: 'game-view__crosshair',
-        id: `${CROSSHAIR_ID_PREFIX}${player.playerId}`,
         innerHTML: SVG_CROSSHAIR,
       });
       element.style.color = `${player.color}`;
+
+      this.crosshairs.set(player.playerId, element);
       this._view.appendChild(element);
     });
+  }
+
+  private onAimUpdate(payload: unknown) {
+    const { position, playerId } = payload as AimPayload;
+  
+    const crosshair = this.crosshairs.get(playerId);
+    if (!crosshair) return;
+  
+    // Convert from -1..1 to screen coordinates
+    const targetX = ((position[0] + 1) / 2) * window.innerWidth;
+    const targetY = ((-position[1] + 1) / 2) * window.innerHeight;
+  
+    crosshair.style.left = `${targetX}px`;
+    crosshair.style.top = `${targetY}px`;
   }
 }

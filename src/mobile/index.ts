@@ -1,5 +1,8 @@
 import type View from '../abstracts/View';
+import RoomManager from '../singletons/NetworkManager/RoomManager';
+import ErrorView from './views/error-view/error-view';
 import GameView from './views/game-view/game-view';
+import LoaderView from './views/loader-view/loader-view';
 import PermissionView from './views/permission-view/permission-view';
 import RegistrationView from './views/registration-view/registration-view';
 
@@ -20,11 +23,14 @@ class Mobile {
     this.currentViewIndex++;
   };
 
-  private views: View[] = [
-    new PermissionView({ onAllowed: this.switchView }),
-    new RegistrationView({ onAccept: this.switchView }),
-    new GameView()
-  ];
+  private views: View[] = RoomManager.instance.roomID
+    ? [
+      new PermissionView({ onAllowed: this.switchView }),
+      new LoaderView({ onConnected: this.switchView }),
+      new RegistrationView({ onAccept: this.switchView }),
+      new GameView()
+    ]
+    : [new ErrorView()];
 
   constructor() {
     this.app.appendChild(this.views[0].view);

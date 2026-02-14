@@ -13,4 +13,6 @@ export default {
   
   STATUS_CONNECTED: 'CONNECTED',
   STATUS_CONNECTING: 'Connecting...',
+
+  ERROR_GAME_NOT_FOUND: 'Game not found',
 };

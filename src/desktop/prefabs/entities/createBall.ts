@@ -16,6 +16,8 @@ export interface BallOptions {
   owner?: Entity;
 }
 
+// if amount of collisions > 2 remove rigidbody
+// not musch users care about the ball anymore, 
 export default function createBall(
   world: World,
   options: BallOptions = {}
