@@ -8,7 +8,7 @@ on:
 env:
   REGION: europe-central2
   REGISTRY: europe-central2-docker.pkg.dev
-  REPOSITORY: smash-hit
+  REPOSITORY: smash-hit-web
 
 jobs:
   deploy:
