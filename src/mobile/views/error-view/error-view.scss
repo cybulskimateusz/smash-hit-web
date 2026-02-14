@@ -1,0 +1,14 @@
+.error-view {
+  display: grid;
+  place-content: center;
+
+  position: absolute;
+  inset: 0;
+
+  &__heading {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 200;
+    color: #ff0000;
+  }
+}

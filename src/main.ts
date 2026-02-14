@@ -1,7 +1,4 @@
-import './style.css';
+import isMobile from './utils/isMobile';
 
-import Game from './Game';
-import MainScene from './scenes/MainScene';
-
-const canvas = document.querySelector('#app') as HTMLCanvasElement;
-new Game(canvas, MainScene);
+if (isMobile()) import('@mobile/index').then(module => module.default);
+else import('@desktop/index').then(module => module.default);

@@ -1,6 +1,6 @@
 import './style.css';
 
-import Game from '@src/Game';
+import Game from '@desktop/Game';
 import { registerTestables } from '@testable/index';
 import { GUI } from 'dat.gui';
 

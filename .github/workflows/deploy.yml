@@ -1,0 +1,63 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  REGION: europe-central2
+  REGISTRY: europe-central2-docker.pkg.dev
+  REPOSITORY: smash-hit
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+      - name: Build & push app image
+        run: |
+          IMAGE=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/app:${{ github.sha }}
+          docker build -f dockerfile.app.prod -t $IMAGE .
+          docker push $IMAGE
+
+      - name: Build & push server image
+        run: |
+          IMAGE=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/server:${{ github.sha }}
+          docker build -f dockerfile.server.prod -t $IMAGE .
+          docker push $IMAGE
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: terraform
+        run: |
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="billing_account=${{ secrets.GCP_BILLING_ACCOUNT }}" \
+            -var="app_image=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/app:${{ github.sha }}" \
+            -var="server_image=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/server:${{ github.sha }}"

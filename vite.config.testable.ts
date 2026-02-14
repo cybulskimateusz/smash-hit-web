@@ -13,6 +13,8 @@ export default defineConfig({
     alias: {
       '@testable': path.resolve(__dirname, 'testable'),
       '@src': path.resolve(__dirname, 'src'),
+      '@desktop': path.resolve(__dirname, 'src/desktop'),
+      '@mobile': path.resolve(__dirname, 'src/mobile'),
     },
   },
   server: {

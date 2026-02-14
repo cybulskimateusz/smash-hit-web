@@ -7,11 +7,28 @@ services:
     container_name: smash-hit-web-app
     environment:
       - NODE_ENV=development
+      - VITE_WS_URL=ws://localhost:3002
     volumes:
       - ./:/app
       - /app/node_modules
     ports:
       - "3000:3000"
+    depends_on:
+      - server
+
+  server:
+    platform: linux/arm64
+    build:
+      context: ./
+      dockerfile: dockerfile.server
+    container_name: smash-hit-server
+    environment:
+      - PORT=3002
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "3002:3002"
 
   test:
     platform: linux/arm64

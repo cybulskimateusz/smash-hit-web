@@ -1,4 +1,4 @@
-import type World from '@src/core/World';
+import type World from '@desktop/core/World';
 
 import TestableScene from './TestableScene';
 

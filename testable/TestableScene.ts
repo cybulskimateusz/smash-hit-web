@@ -1,19 +1,19 @@
+import Collider from '@desktop/components/Collider';
+import GameScene from '@desktop/components/GameScene';
+import MeshSplitter from '@desktop/components/MeshSplitter';
+import RigidBody from '@desktop/components/RigidBody';
+import ThreeMesh from '@desktop/components/ThreeMesh';
+import Transform from '@desktop/components/Transform';
+import type Entity from '@desktop/core/Entity';
+import type World from '@desktop/core/World';
 import RAPIER from '@dimforge/rapier3d';
-import Collider from '@src/components/Collider';
-import GameScene from '@src/components/GameScene';
-import MeshSplitter from '@src/components/MeshSplitter';
-import RigidBody from '@src/components/RigidBody';
-import ThreeMesh from '@src/components/ThreeMesh';
-import Transform from '@src/components/Transform';
-import type Entity from '@src/core/Entity';
-import type World from '@src/core/World';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
 export type GeometryType = 'Sphere' | 'Box' | 'Cylinder' | 'Cone' | 'Icosahedron';
 
 abstract class TestableScene extends GameScene {
-  static path: string;
+  static readonly path: string;
   
   constructor(world: World, canvas: HTMLCanvasElement) {
     super(world, canvas);
@@ -70,7 +70,7 @@ abstract class TestableScene extends GameScene {
     threeMesh.mesh = ballMesh;
 
     const transform = new Transform();
-    transform.position.copy(this.camera.position);
+    transform.position.copy(this.world.camera.position);
 
     const rigidBody = new RigidBody();
     rigidBody.desc = RAPIER.RigidBodyDesc.dynamic();

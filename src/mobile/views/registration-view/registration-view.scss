@@ -1,0 +1,55 @@
+.registration-view {
+  background: #000;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  &__input {
+    width: 100%;
+    
+    border-radius: 100px;
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+
+    padding: 20px 30px;
+  }
+
+  &__label {
+    margin: 0;
+    font-size: 1rem;
+
+    align-self: center;
+  }
+
+  &__color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  &__color-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__color-label {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 0.5rem;
+    transition: opacity 0.15s;
+
+    &:has(.registration-view__color-radio:not(:checked)) {
+      opacity: 0.3;
+    }
+  }
+}
