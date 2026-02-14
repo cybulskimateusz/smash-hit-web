@@ -16,11 +16,11 @@ const preloadMetalPlateTextureMaps = async (): Promise<TextureMaps> => {
   const exrLoader = new EXRLoader();
 
   const [map, displacementMap, roughnessMap, normalMap, metalnessMap] = await Promise.all([
-    textureLoader.loadAsync('/src/desktop/assets/metal_plate_material/diffuse.jpg'),
-    textureLoader.loadAsync('/src/desktop/assets/metal_plate_material/displacement.png'),
-    exrLoader.loadAsync('/src/desktop/assets/metal_plate_material/roughness.exr'),
-    exrLoader.loadAsync('/src/desktop/assets/metal_plate_material/normal.exr'),
-    exrLoader.loadAsync('/src/desktop/assets/metal_plate_material/metalness.exr')
+    textureLoader.loadAsync('/assets/metal_plate_material/diffuse.jpg'),
+    textureLoader.loadAsync('/assets/metal_plate_material/displacement.png'),
+    exrLoader.loadAsync('/assets/metal_plate_material/roughness.exr'),
+    exrLoader.loadAsync('/assets/metal_plate_material/normal.exr'),
+    exrLoader.loadAsync('/assets/metal_plate_material/metalness.exr')
   ]);
   
   configureTexture(map);
