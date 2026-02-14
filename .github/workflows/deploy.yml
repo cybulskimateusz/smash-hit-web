@@ -43,7 +43,6 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="billing_account=${{ secrets.GCP_BILLING_ACCOUNT }}" \
             -var="app_image=us-docker.pkg.dev/cloudrun/container/hello" \
             -var="server_image=us-docker.pkg.dev/cloudrun/container/hello"
 
@@ -95,6 +94,5 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="billing_account=${{ secrets.GCP_BILLING_ACCOUNT }}" \
             -var="app_image=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/app:${{ github.sha }}" \
             -var="server_image=${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/server:${{ github.sha }}"

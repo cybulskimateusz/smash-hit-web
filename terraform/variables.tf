@@ -18,8 +18,3 @@ variable "server_image" {
   description = "Docker image URL for the WebSocket server"
   type        = string
 }
-
-variable "billing_account" {
-  description = "GCP billing account ID"
-  type        = string
-}

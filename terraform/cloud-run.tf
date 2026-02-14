@@ -1,5 +1,5 @@
 resource "google_cloud_run_v2_service" "server" {
-  project  = google_project.smash_hit.project_id
+  project  = data.google_project.smash_hit.project_id
   name     = "smash-hit-server"
   location = var.region
 
@@ -34,7 +34,7 @@ resource "google_cloud_run_v2_service" "server" {
 }
 
 resource "google_cloud_run_v2_service" "app" {
-  project  = google_project.smash_hit.project_id
+  project  = data.google_project.smash_hit.project_id
   name     = "smash-hit-app"
   location = var.region
 
