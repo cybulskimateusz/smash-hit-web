@@ -31,8 +31,8 @@ export default class extends View {
 
     this.orientation.onAimUpdate = this.onAimUpdate;
 
-    COMPONENTS.BUTTON_CALIBRATION.addEventListener('click', () => this.orientation.calibrate());
-    COMPONENTS.BUTTON_SHOOT.addEventListener('touchstart', (e) => this.onShoot(e));
+    COMPONENTS.BUTTON_CALIBRATION.addEventListener('click', this.orientation.calibrate);
+    COMPONENTS.BUTTON_SHOOT.addEventListener('touchstart', this.onShoot);
 
     this.network.on(MESSAGE_TYPES.SCORE_UPDATED, (payload) => {
       const { score } = payload as { score: number };
@@ -57,11 +57,16 @@ export default class extends View {
   private onShoot(e: TouchEvent) {
     e.preventDefault();
 
-    if (!this.network.isConnected) return;
+    if (!this.network.isConnected || COMPONENTS.BUTTON_SHOOT.disabled) return;
 
     this.network.send(MESSAGE_TYPES.BALL_THROWN, {
       direction: [this.orientation.aimX, this.orientation.aimY, -1],
       playerId: NetworkManager.playerID,
     });
+
+    COMPONENTS.BUTTON_SHOOT.disabled = true;
+    setTimeout(() => {
+      COMPONENTS.BUTTON_SHOOT.disabled = false;
+    }, 2000);
   }
 }

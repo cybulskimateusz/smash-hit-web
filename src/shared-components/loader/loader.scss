@@ -1,9 +1,12 @@
-.loader-view {
+.loader {
   display: grid;
   place-content: center;
 
   position: absolute;
   inset: 0;
+  z-index: 1001;
+
+  background: #000;
 
   &__dots {
     display: flex;

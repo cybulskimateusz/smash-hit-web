@@ -4,6 +4,7 @@ import SVG_CROSSHAIR from '@desktop/assets/svg/chrosshair.svg?raw';
 import View from '@src/abstracts/View';
 import MainScene from '@src/desktop/scenes/MainScene';
 import AssetManager from '@src/desktop/singletons/AssetManager/AssetManager';
+import Loader from '@src/shared-components/loader/loader';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
@@ -23,11 +24,14 @@ export default class extends View {
   });
 
   private crosshairs = new Map<string, HTMLElement>();
-    
+
+  private loader = new Loader();
+
   constructor() {
     super();
     autoBind(this);
 
+    this._view.appendChild(this.loader.view);
     this.loadGame();
     this.createCrosshairs();
     NetworkManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
@@ -38,6 +42,7 @@ export default class extends View {
     await AssetManager.instance.preload();
     const { default: Game } = await import('@desktop/Game');
     new Game(this.canvas, MainScene);
+    this.loader.view.remove();
   }
 
   private createCrosshairs() {

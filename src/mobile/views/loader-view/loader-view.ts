@@ -1,25 +1,13 @@
-import './loader-view.scss';
-
-import View from '@src/abstracts/View';
+import Loader from '@src/shared-components/loader/loader';
 import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 
 interface LoaderViewProps {
   onConnected: () => void;
 }
 
-export default class LoaderView extends View {
-  protected _view = View.createElement('section', { className: 'loader-view' });
-
-  private dots = View.createElement('div', { className: 'loader-view__dots' });
-
+export default class LoaderView extends Loader {
   constructor(private props: LoaderViewProps) {
     super();
-
-    for (let i = 0; i < 3; i++) {
-      this.dots.appendChild(View.createElement('span', { className: 'loader-view__dot' }));
-    }
-
-    this._view.appendChild(this.dots);
 
     NetworkManager.instance.onOpen(() => {
       this.props.onConnected();
