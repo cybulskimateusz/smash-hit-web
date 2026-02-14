@@ -3,11 +3,14 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY server/package*.json ./
+# Copy full project structure so rootDir ("..") resolves correctly
+COPY server/ ./server/
+# Create shared dir (may not exist but tsconfig references it)
+RUN mkdir -p ./shared
+
+WORKDIR /app/server
 
 RUN npm install
-
-COPY server/ ./
 
 RUN npm run build
 
@@ -16,12 +19,13 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/package*.json ./
+COPY --from=build /app/server/package*.json ./
 
 RUN npm install --omit=dev
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/server/dist ./dist
 
 EXPOSE 8080
 
-CMD ["node", "dist/index.prod.js"]
+# tsc with rootDir=".." outputs to dist/server/
+CMD ["node", "dist/server/index.prod.js"]
