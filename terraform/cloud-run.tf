@@ -11,11 +11,6 @@ resource "google_cloud_run_v2_service" "server" {
         container_port = 3002
       }
 
-      env {
-        name  = "PORT"
-        value = "3002"
-      }
-
       resources {
         limits = {
           cpu    = "1"
