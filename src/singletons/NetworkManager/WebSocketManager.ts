@@ -82,6 +82,12 @@ class WebSocketManager {
   }
 
   private getWebsocketURL(): string {
+    const wsUrl = import.meta.env.VITE_WS_URL;
+
+    if (wsUrl) {
+      return wsUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
+    }
+
     const port = import.meta.env.VITE_WS_PORT || '3002';
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.hostname}:${port}`;
