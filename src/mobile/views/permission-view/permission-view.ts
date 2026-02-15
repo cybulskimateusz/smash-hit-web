@@ -36,7 +36,7 @@ export default class PermissionView extends View {
     PermissionManager.instance
       .request()
       .then(isAllowed => {
-        if (!isAllowed) return;
+        if (!isAllowed) return; 
         this.props.onAllowed();
       });
   };

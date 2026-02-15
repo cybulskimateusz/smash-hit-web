@@ -1,5 +1,6 @@
-import type View from '../abstracts/View';
+import View from '../abstracts/View';
 import RoomManager from '../singletons/NetworkManager/RoomManager';
+import PermissionManager from './singletons/PermissionManager';
 import ErrorView from './views/error-view/error-view';
 import GameView from './views/game-view/game-view';
 import LoaderView from './views/loader-view/loader-view';
@@ -13,9 +14,12 @@ class Mobile {
 
   private switchView = () => {
     const currentView = this.views[this.currentViewIndex];
-    const nextView = this.views[this.currentViewIndex + 1];
+    const nextViewFactory = this.viewFactories[this.currentViewIndex + 1];
 
-    if (!nextView || !currentView) return;
+    if (!nextViewFactory || !currentView) return;
+
+    const nextView = nextViewFactory();
+    this.views[this.currentViewIndex + 1] = nextView;
 
     currentView.view.remove();
     this.app.appendChild(nextView.view);
@@ -23,17 +27,23 @@ class Mobile {
     this.currentViewIndex++;
   };
 
-  private views: View[] = RoomManager.instance.roomID
+  private viewFactories: (() => View)[] = RoomManager.instance.roomID
     ? [
-      new PermissionView({ onAllowed: this.switchView }),
-      new LoaderView({ onConnected: this.switchView }),
-      new RegistrationView({ onAccept: this.switchView }),
-      new GameView()
+      ...(PermissionManager.isRequired
+        ? [() => new PermissionView({ onAllowed: this.switchView }) as View]
+        : []),
+      () => new LoaderView({ onConnected: this.switchView }),
+      () => new RegistrationView({ onAccept: this.switchView }),
+      () => new GameView()
     ]
-    : [new ErrorView()];
+    : [() => new ErrorView()];
+
+  private views: (View | undefined)[] = [];
 
   constructor() {
-    this.app.appendChild(this.views[0].view);
+    const firstView = this.viewFactories[0]();
+    this.views[0] = firstView;
+    this.app.appendChild(firstView.view);
   }
 }
 

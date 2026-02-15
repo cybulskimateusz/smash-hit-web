@@ -6,6 +6,7 @@ const PORT = Number(process.env.PORT) || 3002;
 
 interface ExtendedWebSocket extends WebSocket {
     room?: string;
+    clientId: string;
 }
 
 interface SignalingMessage {
@@ -14,6 +15,8 @@ interface SignalingMessage {
     offer?: unknown;
     answer?: unknown;
     candidate?: unknown;
+    senderId?: string;
+    targetId?: string;
 }
 
 const pems = selfsigned.generate(undefined, { days: 365 });
@@ -32,18 +35,20 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 webSocketServer.on('connection', (socket: ExtendedWebSocket) => {
-    
+  socket.clientId = crypto.randomUUID();
+
   socket.on('message', (rawData: string) => {
     try {
       const data: SignalingMessage = JSON.parse(rawData);
 
       if (data.type === 'join' && data.room) {
         socket.room = data.room;
-        console.log(`User joined room: ${socket.room}`);
+        console.log(`User joined room: ${socket.room} (clientId: ${socket.clientId})`);
+        socket.send(JSON.stringify({ type: 'joined', payload: { clientId: socket.clientId } }));
         return;
       }
 
-      if (socket.room) broadcastToRoom(socket, data);
+      if (socket.room) broadcastToRoom(socket, { ...data, senderId: socket.clientId });
     } catch (error) {
       console.error('Websocket message error: ', error);
     }
@@ -55,7 +60,7 @@ webSocketServer.on('connection', (socket: ExtendedWebSocket) => {
 });
 
 function broadcastToRoom(sender: ExtendedWebSocket, data: SignalingMessage) {
-  webSocketServer.clients.forEach((client: ExtendedWebSocket) => {
+  (webSocketServer.clients as Set<ExtendedWebSocket>).forEach((client) => {
     if (
       client !== sender && 
       client.room === sender.room && 

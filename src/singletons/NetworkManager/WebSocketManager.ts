@@ -6,6 +6,9 @@ class WebSocketManager {
   static instance = new WebSocketManager();
 
   private socket?: WebSocket;
+  private _clientId?: string;
+
+  get clientId() { return this._clientId; }
 
   private handlers = new Map<keyof SignalingPayloadMap, Set<MessageHandler>>();
   private pendingMessages: SignalingEvent[] = [];
@@ -21,11 +24,10 @@ class WebSocketManager {
   }
 
   public send(event: SignalingEvent) {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(event));
-    } else {
-      this.pendingMessages.push(event);
-    }
+    if (this.socket?.readyState === WebSocket.OPEN)
+      return this.socket.send(JSON.stringify(event));
+   
+    this.pendingMessages.push(event);
   }
 
   public on<T extends keyof SignalingPayloadMap>(type: T, handler: MessageHandler) {
@@ -60,22 +62,15 @@ class WebSocketManager {
   }
 
   private async onMessage(event: MessageEvent<string>) {
-    const achievedMessage: SignalingEvent = JSON.parse(event.data);
+    const message: SignalingEvent = JSON.parse(event.data);
 
     try {
-      console.log('[WebSocketManager] Received:', achievedMessage.type);
+      console.log('[WebSocketManager] Received:', message.type);
 
-      switch(achievedMessage.type) {
-      case 'offer':
-        this.handlers.get('offer')?.forEach(callback => callback(achievedMessage));
-        break;
-      case 'answer':
-        this.handlers.get('answer')?.forEach(callback => callback(achievedMessage));
-        break;
-      case 'candidate':
-        this.handlers.get('candidate')?.forEach(callback => callback(achievedMessage));
-        break;
-      }
+      if (message.type === 'joined')
+        this._clientId = (message as SignalingMessage<'joined'>).payload.clientId;
+
+      this.handlers.get(message.type)?.forEach(callback => callback(message));
     } catch (err) {
       console.error('[WebSocketManager] Failed to parse message:', err);
     }
@@ -84,9 +79,8 @@ class WebSocketManager {
   private getWebsocketURL(): string {
     const wsUrl = import.meta.env.VITE_WS_URL;
 
-    if (wsUrl) {
+    if (wsUrl)
       return wsUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
-    }
 
     const port = import.meta.env.VITE_WS_PORT || '3002';
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

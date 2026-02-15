@@ -5,12 +5,15 @@ declare interface SignalingPayloadMap {
     'answer': RTCSessionDescriptionInit;
     'candidate': RTCIceCandidateInit;
     'join': { room: string };
+    'joined': { clientId: string };
     'error': { message: string };
 }
 
 declare interface SignalingMessage<T extends keyof SignalingPayloadMap> {
     type: T;
     payload: SignalingPayloadMap[T];
+    senderId?: string;
+    targetId?: string;
 }
 
 declare type SignalingEvent = {

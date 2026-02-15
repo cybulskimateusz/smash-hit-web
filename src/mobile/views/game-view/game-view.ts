@@ -35,7 +35,8 @@ export default class extends View {
     COMPONENTS.BUTTON_SHOOT.addEventListener('touchstart', this.onShoot);
 
     this.network.on(MESSAGE_TYPES.SCORE_UPDATED, (payload) => {
-      const { score } = payload as { score: number };
+      const { score, playerId } = payload as ScoreUpdatedPayload;
+      if (NetworkManager.playerID !== playerId) return;
       this.scoreElement.innerHTML = String(score);
     });
 
@@ -67,6 +68,6 @@ export default class extends View {
     COMPONENTS.BUTTON_SHOOT.disabled = true;
     setTimeout(() => {
       COMPONENTS.BUTTON_SHOOT.disabled = false;
-    }, 2000);
+    }, 500);
   }
 }
