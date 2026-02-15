@@ -1,12 +1,12 @@
 import './game-view.scss';
 
 import SVG_CROSSHAIR from '@desktop/assets/svg/chrosshair.svg?raw';
+import MainScene from '@desktop/scenes/MainScene';
+import AssetManager from '@desktop/singletons/AssetManager/AssetManager';
+import DesktopNetworkManager from '@desktop/singletons/NetworkManager';
 import View from '@src/abstracts/View';
-import MainScene from '@src/desktop/scenes/MainScene';
-import AssetManager from '@src/desktop/singletons/AssetManager/AssetManager';
 import Loader from '@src/shared-components/loader/loader';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 interface AimPayload {
@@ -34,7 +34,7 @@ export default class extends View {
     this._view.appendChild(this.loader.view);
     this.loadGame();
     this.createCrosshairs();
-    NetworkManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
+    DesktopNetworkManager.instance.on(MESSAGE_TYPES.AIM_UPDATE, this.onAimUpdate);
   }
 
   private async loadGame() {
@@ -46,7 +46,7 @@ export default class extends View {
   }
 
   private createCrosshairs() {
-    NetworkManager.connectedPlayers.forEach(player => {
+    DesktopNetworkManager.connectedPlayers.forEach(player => {
       const element = View.createElement('div', {
         className: 'game-view__crosshair',
         innerHTML: SVG_CROSSHAIR,

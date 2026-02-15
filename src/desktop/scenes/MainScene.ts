@@ -14,7 +14,7 @@ import PlayerRegistrationSystem from '@desktop/systems/PlayerRegistrationSystem'
 import RenderSystem from '@desktop/systems/RenderSystem';
 import ScoringSystem from '@desktop/systems/ScoringSystem';
 import SpawnTotemsSystem from '@desktop/systems/SpawnTotemsSystem/SpawnTotemsSystem';
-import ThrowBallSystem from '@src/desktop/systems/ThrowBallSystem';
+import ThrowBallSystem from '@desktop/systems/ThrowBallSystem';
 import * as THREE from 'three';
 
 class MainScene extends GameScene {

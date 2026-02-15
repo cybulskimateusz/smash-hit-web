@@ -1,9 +1,9 @@
 import './game-view.scss';
 
+import MobileNetworkManager from '@mobile/singletons/NetworkManager';
+import OrientationManager from '@mobile/singletons/OrientationManager';
 import View from '@src/abstracts/View';
-import OrientationManager from '@src/mobile/singletons/OrientationManager';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 import COMPONENTS from './game-view.components';
@@ -16,7 +16,7 @@ export default class extends View {
   private scoreElement = COMPONENTS.SCORE;
 
   private orientation = OrientationManager.instance;
-  private network = NetworkManager.instance;
+  private network = MobileNetworkManager.instance;
 
   private lastSendTime = 0;
 
@@ -36,7 +36,7 @@ export default class extends View {
 
     this.network.on(MESSAGE_TYPES.SCORE_UPDATED, (payload) => {
       const { score, playerId } = payload as ScoreUpdatedPayload;
-      if (NetworkManager.playerID !== playerId) return;
+      if (MobileNetworkManager.playerID !== playerId) return;
       this.scoreElement.innerHTML = String(score);
     });
 
@@ -50,7 +50,7 @@ export default class extends View {
       this.lastSendTime = now;
       this.network.send(MESSAGE_TYPES.AIM_UPDATE, {
         position: [aimX, aimY],
-        playerId: NetworkManager.playerID
+        playerId: MobileNetworkManager.playerID
       });
     }
   }
@@ -62,7 +62,7 @@ export default class extends View {
 
     this.network.send(MESSAGE_TYPES.BALL_THROWN, {
       direction: [this.orientation.aimX, this.orientation.aimY, -1],
-      playerId: NetworkManager.playerID,
+      playerId: MobileNetworkManager.playerID,
     });
 
     COMPONENTS.BUTTON_SHOOT.disabled = true;

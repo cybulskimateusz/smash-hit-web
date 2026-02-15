@@ -1,8 +1,8 @@
 import './permission-view.scss';
 
+import PermissionManager from '@mobile/singletons/PermissionManager';
 import View from '@src/abstracts/View';
 import COPY from '@src/COPY';
-import PermissionManager from '@src/mobile/singletons/PermissionManager';
 import autoBind from 'auto-bind';
 
 interface PermissionViewProps {

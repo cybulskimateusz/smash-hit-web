@@ -1,8 +1,8 @@
 import './qr-code-view.scss';
 
+import DesktopNetworkManager from '@desktop/singletons/NetworkManager';
 import View from '@src/abstracts/View';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
-import NetworkManager from '@src/singletons/NetworkManager/NetworkManager';
 import autoBind from 'auto-bind';
 
 import COMPONENTS from './qr-code-view.components';
@@ -27,9 +27,9 @@ class QRCodeView extends View {
     this._view.appendChild(COMPONENTS.START_GAME_BUTTON);
     COMPONENTS.START_GAME_BUTTON.onclick = props.onGameStart;
 
-    NetworkManager.instance.on(MESSAGE_TYPES.PLAYER_JOINED, this.onPlayerJoined);
-    NetworkManager.instance.on(MESSAGE_TYPES.PLAYER_LEFT, this.onPlayerLeft);
-    NetworkManager.instance.onClose(this.onDisconnect);
+    DesktopNetworkManager.instance.on(MESSAGE_TYPES.PLAYER_JOINED, this.onPlayerJoined);
+    DesktopNetworkManager.instance.on(MESSAGE_TYPES.PLAYER_LEFT, this.onPlayerLeft);
+    DesktopNetworkManager.instance.onClose(this.onDisconnect);
 
     this.handleButtonActive();
   }
