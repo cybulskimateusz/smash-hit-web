@@ -6,7 +6,7 @@ import GameSettingsManager from '@desktop/singletons/GameSettingsManager';
 import autoBind from 'auto-bind';
 import { Vector3 } from 'three';
 
-const DEFAULT_CAMERA_SPEED = 0.01;
+const DEFAULT_CAMERA_SPEED = 0.025;
 const CAMERA_VIEW_DISTANCE = 0.3;
 
 export default class extends System {

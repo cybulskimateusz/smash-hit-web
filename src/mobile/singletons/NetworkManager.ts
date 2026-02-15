@@ -1,6 +1,5 @@
 import NetworkManager, { ICE_SERVERS } from '@src/singletons/NetworkManager/NetworkManager';
 import WebSocketManager from '@src/singletons/NetworkManager/WebSocketManager';
-import autoBind from 'auto-bind';
 
 class MobileNetworkManager extends NetworkManager {
   static instance = new MobileNetworkManager();
@@ -15,7 +14,6 @@ class MobileNetworkManager extends NetworkManager {
 
   constructor() {
     super();
-    autoBind(this);
 
     this.peerConnection = new RTCPeerConnection(ICE_SERVERS);
     this.peerConnection.onicecandidate = this.onIceCandidate;

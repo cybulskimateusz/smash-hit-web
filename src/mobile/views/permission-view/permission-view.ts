@@ -3,11 +3,8 @@ import './permission-view.scss';
 import PermissionManager from '@mobile/singletons/PermissionManager';
 import View from '@src/abstracts/View';
 import COPY from '@src/COPY';
+import RoutingManager from '@src/mobile/singletons/RoutingManager';
 import autoBind from 'auto-bind';
-
-interface PermissionViewProps {
-    onAllowed: () => void;
-}
 
 export default class PermissionView extends View {
   protected _view = View.createElement('section', { className: 'permission-view' });
@@ -23,7 +20,7 @@ export default class PermissionView extends View {
     type: 'button'
   });
 
-  constructor(private props: PermissionViewProps) {
+  constructor() {
     super();
     autoBind(this);
 
@@ -36,8 +33,15 @@ export default class PermissionView extends View {
     PermissionManager.instance
       .request()
       .then(isAllowed => {
-        if (!isAllowed) return; 
-        this.props.onAllowed();
+        if (!isAllowed) {
+          this.heading.innerText =
+            'Permission denied – reset in Safari Settings > website > Motion & Orientation Access';
+          return;
+        }
+        RoutingManager.instance.route('loading');
+      })
+      .catch(err => {
+        this.heading.innerText = `Error: ${err}`;
       });
   };
 }

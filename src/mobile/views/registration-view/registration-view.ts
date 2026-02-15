@@ -3,6 +3,7 @@ import './registration-view.scss';
 import MobileNetworkManager from '@mobile/singletons/NetworkManager';
 import View from '@src/abstracts/View';
 import COPY from '@src/COPY';
+import RoutingManager from '@src/mobile/singletons/RoutingManager';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 
 const COLORS = [
@@ -16,10 +17,6 @@ const COLORS = [
   '#e84393',
   '#ecf0f1',
 ];
-
-interface RegistrationViewProps {
-  onAccept: () => void;
-}
 
 export default class RegistrationView extends View {
   protected _view = View.createElement('section', { className: 'registration-view' });
@@ -39,7 +36,7 @@ export default class RegistrationView extends View {
     innerText: COPY.BUTTON_JOIN,
   });
 
-  constructor(private props: RegistrationViewProps) {
+  constructor() {
     super();
 
     this.buildColorGrid();
@@ -65,7 +62,7 @@ export default class RegistrationView extends View {
         color: this.selectedColor
       });
     });
-    this.props.onAccept();
+    RoutingManager.instance.route('game');
   };
 
   private buildColorGrid() {

@@ -1,8 +1,6 @@
 import NetworkManager, { ICE_SERVERS } from '@src/singletons/NetworkManager/NetworkManager';
 import RoomManager from '@src/singletons/NetworkManager/RoomManager';
 import WebSocketManager from '@src/singletons/NetworkManager/WebSocketManager';
-import autoBind from 'auto-bind';
-
 interface PeerEntry {
   peerConnection: RTCPeerConnection;
   dataChannel?: RTCDataChannel;
@@ -26,7 +24,6 @@ class DesktopNetworkManager extends NetworkManager {
 
   constructor() {
     super();
-    autoBind(this);
   }
 
   public send(type: string, payload: unknown) {

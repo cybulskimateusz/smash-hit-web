@@ -1,16 +1,13 @@
 import MobileNetworkManager from '@mobile/singletons/NetworkManager';
+import RoutingManager from '@src/mobile/singletons/RoutingManager';
 import Loader from '@src/shared-components/loader/loader';
 
-interface LoaderViewProps {
-  onConnected: () => void;
-}
-
 export default class LoaderView extends Loader {
-  constructor(private props: LoaderViewProps) {
+  constructor() {
     super();
 
     MobileNetworkManager.instance.onOpen(() => {
-      this.props.onConnected();
+      RoutingManager.instance.route('register');
     });
   }
 }
