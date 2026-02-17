@@ -2,7 +2,7 @@ import https from 'https';
 import selfsigned from 'selfsigned';
 import { WebSocket, WebSocketServer } from 'ws';
 
-const PORT = Number(process.env.PORT) || 3002;
+const PORT = Number(process.env.PORT) || 8080;
 
 interface ExtendedWebSocket extends WebSocket {
     room?: string;

@@ -82,7 +82,7 @@ class WebSocketManager {
     if (wsUrl)
       return wsUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
 
-    const port = import.meta.env.VITE_WS_PORT || '3002';
+    const port = import.meta.env.VITE_WS_PORT || '8080';
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.hostname}:${port}`;
   }

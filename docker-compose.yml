@@ -22,12 +22,12 @@ services:
       dockerfile: dockerfile.server
     container_name: smash-hit-server
     environment:
-      - PORT=3002
+      - PORT=8080
     volumes:
       - ./server:/app
       - /app/node_modules
     ports:
-      - "3002:3002"
+      - "8080:8080"
 
   test:
     platform: linux/arm64
