@@ -13,7 +13,7 @@ RUN if [ -f package-lock.json ]; then \
 
 COPY . .
 
-ENV VITE_WS_URL=__WS_URL_PLACEHOLDER__
+ARG VITE_WS_URL
 
 RUN npm run build
 
@@ -25,10 +25,7 @@ WORKDIR /app
 RUN npm install -g serve@14
 
 COPY --from=build /app/dist ./dist
-COPY docker-entrypoint.sh ./
-
-RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8080
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["serve", "-s", "dist", "-l", "8080"]
