@@ -27,15 +27,15 @@ declare interface NetworkMessage<T = unknown> {
 
 declare interface PlayerWelcomePayload {
   playerId: string;
-  color: number;
+  color: string;
   isLocal: boolean;
 }
 
 declare interface PlayerJoinedPayload {
   playerId: string;
-  color: number;
-  score: number;
-  isLocal: boolean;
+  color: string;
+  score?: number;
+  isLocal?: boolean;
 }
 
 declare interface PlayerLeftPayload {
@@ -61,6 +61,11 @@ declare interface ScoreUpdatedPayload {
 declare interface StateSyncPayload {
   playerId: string;
   position: [number, number, number];
+}
+
+declare interface AimPayload {
+  position: [number, number];
+  playerId: string;
 }
 
 declare type MessageType =

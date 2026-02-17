@@ -9,11 +9,6 @@ import Loader from '@src/shared-components/loader/loader';
 import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import autoBind from 'auto-bind';
 
-interface AimPayload {
-  position: [number, number];
-  playerId: string;
-}
-
 export default class extends View {
   protected _view = View.createElement('section', {
     className: 'game-view'
@@ -58,8 +53,7 @@ export default class extends View {
     });
   }
 
-  private onAimUpdate(payload: unknown) {
-    const { position, playerId } = payload as AimPayload;
+  private onAimUpdate({ position, playerId }: AimPayload) {
   
     const crosshair = this.crosshairs.get(playerId);
     if (!crosshair) return;

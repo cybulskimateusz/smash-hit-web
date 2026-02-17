@@ -21,9 +21,9 @@ export default class extends System {
     DesktopNetworkManager.instance.on(MESSAGE_TYPES.BALL_THROWN, this.onBallThrown);
   }
 
-  private onBallThrown(payload: unknown) {
+  private onBallThrown(payload: BallThrownPayload) {
     try {
-      const { direction, playerId } = payload as BallThrownPayload;
+      const { direction, playerId } = payload;
 
       const owner = this.query(Player).find(entity => entity.get(Player)?.id === playerId);
 

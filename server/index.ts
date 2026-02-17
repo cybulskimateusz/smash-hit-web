@@ -1,37 +1,44 @@
+import http from 'http';
 import https from 'https';
-import selfsigned from 'selfsigned';
 import { WebSocket, WebSocketServer } from 'ws';
 
 const PORT = Number(process.env.PORT) || 8080;
+const IS_DEV = process.env.NODE_ENV !== 'production';
 
 interface ExtendedWebSocket extends WebSocket {
     room?: string;
     clientId: string;
 }
 
-interface SignalingMessage {
-    type?: string;
-    room?: string;
-    offer?: unknown;
-    answer?: unknown;
-    candidate?: unknown;
-    senderId?: string;
-    targetId?: string;
+interface JoinMessage {
+    type: 'join';
+    room: string;
 }
 
-const pems = selfsigned.generate(undefined, { days: 365 });
-const server = https.createServer({
-  key: pems.private,
-  cert: pems.cert,
-}, (_req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.end('<h1>WebSocket Server</h1><p>Certificate accepted! You can close this tab.</p>');
-});
+type RelayMessage = SignalingMessage<'offer'> | SignalingMessage<'answer'> | SignalingMessage<'candidate'>;
+type IncomingMessage = JoinMessage | RelayMessage;
 
+async function createServer() {
+  if (IS_DEV) {
+    const { default: selfsigned } = await import('selfsigned');
+    const pems = selfsigned.generate(undefined, { days: 365 });
+    return https.createServer({ key: pems.private, cert: pems.cert }, (_req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<h1>WebSocket Server</h1><p>Certificate accepted! You can close this tab.</p>');
+    });
+  }
+
+  return http.createServer((_req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end('<h1>WebSocket Server</h1>');
+  });
+}
+
+const server = await createServer();
 const webSocketServer = new WebSocketServer({ server });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`WebSocket server (WSS) running on port ${PORT}`);
+  console.log(`WebSocket server (${IS_DEV ? 'WSS' : 'WS'}) running on port ${PORT}`);
 });
 
 webSocketServer.on('connection', (socket: ExtendedWebSocket) => {
@@ -39,9 +46,9 @@ webSocketServer.on('connection', (socket: ExtendedWebSocket) => {
 
   socket.on('message', (rawData: string) => {
     try {
-      const data: SignalingMessage = JSON.parse(rawData);
+      const data: IncomingMessage = JSON.parse(rawData);
 
-      if (data.type === 'join' && data.room) {
+      if (data.type === 'join') {
         socket.room = data.room;
         console.log(`User joined room: ${socket.room} (clientId: ${socket.clientId})`);
         socket.send(JSON.stringify({ type: 'joined', payload: { clientId: socket.clientId } }));
@@ -59,11 +66,11 @@ webSocketServer.on('connection', (socket: ExtendedWebSocket) => {
   });
 });
 
-function broadcastToRoom(sender: ExtendedWebSocket, data: SignalingMessage) {
+function broadcastToRoom(sender: ExtendedWebSocket, data: RelayMessage) {
   (webSocketServer.clients as Set<ExtendedWebSocket>).forEach((client) => {
     if (
-      client !== sender && 
-      client.room === sender.room && 
+      client !== sender &&
+      client.room === sender.room &&
       client.readyState === WebSocket.OPEN
     ) client.send(JSON.stringify(data));
   });

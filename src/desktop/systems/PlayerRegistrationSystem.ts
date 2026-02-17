@@ -16,8 +16,8 @@ export default class PlayerRegistrationSystem extends System {
     DesktopNetworkManager.instance.on(MESSAGE_TYPES.PLAYER_JOINED, this.onPlayerJoined);
   }
 
-  private onPlayerJoined(payload: unknown) {
-    this.pendingPlayers.push(payload as PlayerJoinedPayload);
+  private onPlayerJoined(payload: PlayerJoinedPayload) {
+    this.pendingPlayers.push(payload);
   }
 
   private createPlayer(data: PlayerJoinedPayload) {
@@ -29,7 +29,7 @@ export default class PlayerRegistrationSystem extends System {
 
     const networkIdentity = new NetworkIdentity();
     networkIdentity.networkId = data.playerId;
-    networkIdentity.isLocal = data.isLocal;
+    networkIdentity.isLocal = data.isLocal ?? false;
 
     entity.add(player).add(networkIdentity);
   }

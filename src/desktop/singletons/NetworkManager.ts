@@ -1,3 +1,4 @@
+import type { GameMessagePayloadMap, GameMessageType } from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import NetworkManager, { ICE_SERVERS } from '@src/singletons/NetworkManager/NetworkManager';
 import RoomManager from '@src/singletons/NetworkManager/RoomManager';
 import WebSocketManager from '@src/singletons/NetworkManager/WebSocketManager';
@@ -26,7 +27,7 @@ class DesktopNetworkManager extends NetworkManager {
     super();
   }
 
-  public send(type: string, payload: unknown) {
+  public send<T extends GameMessageType>(type: T, payload: GameMessagePayloadMap[T]) {
     const message = JSON.stringify({ type, payload });
 
     for (const peer of this.peers.values())

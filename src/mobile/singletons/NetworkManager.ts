@@ -1,3 +1,4 @@
+import type { GameMessagePayloadMap, GameMessageType } from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import NetworkManager, { ICE_SERVERS } from '@src/singletons/NetworkManager/NetworkManager';
 import WebSocketManager from '@src/singletons/NetworkManager/WebSocketManager';
 
@@ -24,7 +25,7 @@ class MobileNetworkManager extends NetworkManager {
     this.createOffer();
   }
 
-  public send(type: string, payload: unknown) {
+  public send<T extends GameMessageType>(type: T, payload: GameMessagePayloadMap[T]) {
     if (this.dataChannel?.readyState === 'open')
       this.dataChannel.send(JSON.stringify({ type, payload }));
   }

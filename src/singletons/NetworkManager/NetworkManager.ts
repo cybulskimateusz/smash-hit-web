@@ -1,24 +1,25 @@
 import autoBind from 'auto-bind';
 
+import type { GameMessagePayloadMap, GameMessageType } from './MESSAGE_TYPES';
 import MESSAGE_TYPES from './MESSAGE_TYPES';
 import WebSocketManager from './WebSocketManager';
 
-type GameMessageHandler = (payload: unknown) => void;
+type GameMessageHandler<T = unknown> = (payload: T) => void;
 
 export const ICE_SERVERS: RTCConfiguration = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
 };
 
 abstract class NetworkManager {
-  static get playerID() { return WebSocketManager.instance.clientId; }
+  static get playerID() { return WebSocketManager.instance.clientId!; }
   static connectedPlayers: PlayerJoinedPayload[] = [];
 
-  protected gameHandlers = new Map<string, Set<GameMessageHandler>>();
+  protected gameHandlers = new Map<GameMessageType, Set<GameMessageHandler>>();
   protected openHandlers = new Set<() => void>();
   protected closeHandlers = new Set<() => void>();
 
   abstract get isConnected(): boolean;
-  abstract send(type: string, payload: unknown): void;
+  abstract send<T extends GameMessageType>(type: T, payload: GameMessagePayloadMap[T]): void;
 
   constructor() {
     autoBind(this);
@@ -29,24 +30,25 @@ abstract class NetworkManager {
 
     this.on(
       MESSAGE_TYPES.PLAYER_JOINED,
-      payload => NetworkManager.connectedPlayers.push(payload as PlayerJoinedPayload)
+      payload => NetworkManager.connectedPlayers.push(payload)
     );
     this.on(
       MESSAGE_TYPES.PLAYER_LEFT,
       payload =>
         NetworkManager.connectedPlayers = NetworkManager.connectedPlayers.filter(connectedPlayer =>
-          connectedPlayer.playerId !== (payload as PlayerLeftPayload).playerId
+          connectedPlayer.playerId !== payload.playerId
         )
     );
   }
 
-  public on(type: string, handler: GameMessageHandler) {
+  public on<T extends GameMessageType>(type: T, handler: GameMessageHandler<GameMessagePayloadMap[T]>) {
     if (!this.gameHandlers.has(type))
       this.gameHandlers.set(type, new Set());
 
-    this.gameHandlers.get(type)!.add(handler);
+    const erasedHandler = handler as GameMessageHandler;
+    this.gameHandlers.get(type)!.add(erasedHandler);
 
-    return { cancel: () => this.gameHandlers.get(type)?.delete(handler) };
+    return { cancel: () => this.gameHandlers.get(type)?.delete(erasedHandler) };
   }
 
   public onOpen(handler: () => void) {
@@ -65,7 +67,8 @@ abstract class NetworkManager {
 
   protected dispatchMessage(event: MessageEvent) {
     try {
-      const { type, payload } = JSON.parse(event.data);
+      type ParsedMessage = { type: GameMessageType; payload: GameMessagePayloadMap[GameMessageType] };
+      const { type, payload } = JSON.parse(event.data) as ParsedMessage;
       this.gameHandlers.get(type)?.forEach(handler => handler(payload));
     } catch (err) {
       console.error('[NetworkManager] Failed to parse message:', err);

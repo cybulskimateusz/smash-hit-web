@@ -34,8 +34,7 @@ class QRCodeView extends View {
     this.handleButtonActive();
   }
 
-  private onPlayerJoined(payload: unknown) {
-    const { playerId, color } = payload as { playerId: string; color: string };
+  private onPlayerJoined({ playerId, color }: PlayerJoinedPayload) {
 
     const square = View.createElement('li', { className: 'qr-code-view__player-square' });
     square.style.backgroundColor = color;
@@ -47,8 +46,7 @@ class QRCodeView extends View {
     this.handleButtonActive();
   };
 
-  private onPlayerLeft(payload: unknown) {
-    const { playerId } = payload as { playerId: string };
+  private onPlayerLeft({ playerId }: PlayerLeftPayload) {
 
     const square = this.playerSquares.get(playerId);
     if (!square) return;

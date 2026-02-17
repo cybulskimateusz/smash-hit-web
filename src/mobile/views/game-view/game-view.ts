@@ -34,8 +34,7 @@ export default class extends View {
     COMPONENTS.BUTTON_CALIBRATION.addEventListener('click', this.orientation.calibrate);
     COMPONENTS.BUTTON_SHOOT.addEventListener('touchstart', this.onShoot);
 
-    this.network.on(MESSAGE_TYPES.SCORE_UPDATED, (payload) => {
-      const { score, playerId } = payload as ScoreUpdatedPayload;
+    this.network.on(MESSAGE_TYPES.SCORE_UPDATED, ({ score, playerId }) => {
       if (MobileNetworkManager.playerID !== playerId) return;
       this.scoreElement.innerHTML = String(score);
     });

@@ -20,4 +20,17 @@ const MESSAGE_TYPES = {
 
 export type MessageType = typeof MESSAGE_TYPES[keyof typeof MESSAGE_TYPES];
 
+export interface GameMessagePayloadMap {
+  [MESSAGE_TYPES.PLAYER_WELCOME]: PlayerWelcomePayload;
+  [MESSAGE_TYPES.PLAYER_JOINED]: PlayerJoinedPayload;
+  [MESSAGE_TYPES.PLAYER_LEFT]: PlayerLeftPayload;
+  [MESSAGE_TYPES.BALL_THROWN]: BallThrownPayload;
+  [MESSAGE_TYPES.AIM_UPDATE]: AimPayload;
+  [MESSAGE_TYPES.TOTEM_DESTROYED]: TotemDestroyedPayload;
+  [MESSAGE_TYPES.SCORE_UPDATED]: ScoreUpdatedPayload;
+  [MESSAGE_TYPES.STATE_SYNC]: StateSyncPayload;
+}
+
+export type GameMessageType = keyof GameMessagePayloadMap;
+
 export default MESSAGE_TYPES;
