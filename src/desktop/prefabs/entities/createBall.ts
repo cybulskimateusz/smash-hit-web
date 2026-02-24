@@ -65,7 +65,7 @@ export default function createBall(
 
   if (owner) {
     const ownedBy = new OwnedBy();
-    ownedBy.player = owner;
+    ownedBy.owner = owner;
     entity.add(ownedBy);
   }
 

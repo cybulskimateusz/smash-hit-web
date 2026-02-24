@@ -6,6 +6,7 @@ import MESSAGE_TYPES from '@src/singletons/NetworkManager/MESSAGE_TYPES';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
+import GameSettingsManager from '../singletons/GameSettingsManager';
 import PhysicsSystem from './PhysicsSystem';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
@@ -44,7 +45,7 @@ export default class extends System {
 
       const spawnOffset = worldDirection.clone().multiplyScalar(5);
       const spawnPosition = this.world.camera.position.clone().add(spawnOffset);
-      const velocity = worldDirection.multiplyScalar(this.ballSpeed);
+      const velocity = worldDirection.multiplyScalar(this.ballSpeed * GameSettingsManager.instance.difficulty);
 
       const entity = createBall(this.world, {
         position: spawnPosition,
