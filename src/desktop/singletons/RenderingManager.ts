@@ -1,5 +1,8 @@
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 import type GameScene from '../components/GameScene';
 import ClockManager from './ClockManager';
@@ -38,7 +41,15 @@ class RenderingManager extends THREE.WebGLRenderer {
     magFilter: THREE.LinearFilter,
     generateMipmaps: true,
   });
-  public scene?: GameScene;
+
+  private _scene?: GameScene;
+  public get scene() { return this._scene; }
+  public set scene(value: GameScene | undefined) {
+    this._scene = value;
+    this.initPostProcessing();
+  }
+
+  private composer?: EffectComposer;
   public clockManager = ClockManager.instance;
 
   private constructor(private props: RenderingManagerProps) {
@@ -61,6 +72,21 @@ class RenderingManager extends THREE.WebGLRenderer {
     this.clockManager.currentTime;
   }
 
+  private initPostProcessing() {
+    if (!this.scene) return;
+
+    this.composer = new EffectComposer(this);
+
+    const renderPass = new RenderPass(this.scene, this.scene.world.camera);
+    this.composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      1.5, 0.4, 0.85
+    );
+    this.composer.addPass(bloomPass);
+  }
+
   private animationLoop() {
     this.applyUniforms();
 
@@ -73,7 +99,12 @@ class RenderingManager extends THREE.WebGLRenderer {
 
     this.setRenderTarget(null);
     this.scene.world.camera.layers.enableAll();
-    this.render(this.scene, this.scene.world.camera);
+
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.render(this.scene, this.scene.world.camera);
+    }
   }
 
   private applyUniforms() {
@@ -97,6 +128,7 @@ class RenderingManager extends THREE.WebGLRenderer {
     this.setSize(width, height, false);
     this.setPixelRatio(window.devicePixelRatio);
     this.backgroundTarget.setSize(width, height);
+    this.composer?.setSize(width, height);
   }
 
   public destroy() {

@@ -1,5 +1,5 @@
 import * as ASSET_TYPES from './ASSET_TYPES';
-import preloadMetalPlateTextureMaps from './preloadMetalPlateTextureMaps';
+import preloadDisplacementGlowingTextureMaps from './preloadDisplacementGlowingTextureMaps';
 
 class AssetManager {
   static instance = new AssetManager();
@@ -19,7 +19,7 @@ class AssetManager {
   } 
 
   private async preloadTextureMaps() {
-    const metalPlateTextureMaps = await preloadMetalPlateTextureMaps();
+    const metalPlateTextureMaps = await preloadDisplacementGlowingTextureMaps();
     this._textureMaps.set('metal_plate', metalPlateTextureMaps);
   }
 }
