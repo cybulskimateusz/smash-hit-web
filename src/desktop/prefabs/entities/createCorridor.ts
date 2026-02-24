@@ -5,10 +5,12 @@ import ThreeMesh from '@desktop/components/ThreeMesh';
 import Transform from '@desktop/components/Transform';
 import type Entity from '@desktop/core/Entity';
 import type World from '@desktop/core/World';
-import MetalPlateMaterial from '@desktop/materials/MetalPlateMateral/MetalPlateMateral';
-import createFireflies from '@desktop/prefabs/decorators/createFireflies';
 import RAPIER from '@dimforge/rapier3d';
+import DisplacementGlowingMaterial from
+  '@src/desktop/materials/DisplacementGlowingMaterial/DisplacementGlowingMaterial';
 import * as THREE from 'three';
+
+import createStars from '../decorators/createStars';
 
 export interface CorridorSegmentOptions {
   startPoint?: THREE.Vector3;
@@ -21,6 +23,7 @@ export interface CorridorSegmentOptions {
   turnStrength?: number;
   segmentIndex?: number;
   material?: THREE.Material;
+  lightColor?: THREE.Color;
   curve: THREE.CubicBezierCurve3;
 }
 
@@ -30,17 +33,18 @@ export interface CorridorSegmentResult {
   endTangent: THREE.Vector3;
 }
 
-const createCorridorMaterial = () => {
-  const corridorMaterial = new MetalPlateMaterial();
-  corridorMaterial.side = THREE.BackSide;
-  return corridorMaterial;
+const createCorridorMaterial = (lightColor: THREE.Color) => {
+  const material = new DisplacementGlowingMaterial();
+  material.side = THREE.DoubleSide;
+  material.glowColor = lightColor;
+  return material;
 };
 
 export const CORRIDOR_DEFAULT_OPTIONS: Omit<CorridorSegmentOptions, 'curve'> = {
-  radius: 20,
-  length: 5000,
-  radialSegments: 32,
-  tubularSegments: 64,
+  radius: 50,
+  length: 100000,
+  radialSegments: 6,
+  tubularSegments: 3,
   turnStrength: 0.4,
   segmentIndex: 0,
 };
@@ -60,7 +64,29 @@ export default function createCorridor(
     corridorProperties.radialSegments,
     false
   );
-  const material = options.material || createCorridorMaterial();
+
+  // Randomly remove one wall for every second segment to create a gap
+  if ((corridorProperties.segmentIndex! + 1) % 2 === 0) {
+    const { radialSegments, tubularSegments } = corridorProperties;
+    const wallToHide = Math.floor(Math.random() * radialSegments!);
+    const indices = geometry.index!.array;
+    const newIndices: number[] = [];
+
+    for (let i = 0; i < tubularSegments!; i++) {
+      for (let j = 0; j < radialSegments!; j++) {
+        if (j === wallToHide) continue;
+
+        const offset = (i * radialSegments! + j) * 6;
+        for (let k = 0; k < 6; k++) {
+          newIndices.push(indices[offset + k]);
+        }
+      }
+    }
+    geometry.setIndex(newIndices);
+  }
+
+  const material = options.material ||
+  createCorridorMaterial(options.lightColor || new THREE.Color().setHSL(Math.random(), 0.8, 0.5));
 
   const mesh = new THREE.Mesh(geometry, material);
 
@@ -69,11 +95,7 @@ export default function createCorridor(
 
   const threeMesh = new ThreeMesh();
   threeMesh.mesh = mesh;
-
-  threeMesh.mesh.add(createFireflies({
-    curve: corridorProperties.curve,
-    radius: corridorProperties.radius!
-  }));
+  mesh.add(createStars(corridorProperties.curve, 100, corridorProperties.radius! * 2));
 
   const rigidBody = new RigidBody();
   rigidBody.desc = RAPIER.RigidBodyDesc.fixed();

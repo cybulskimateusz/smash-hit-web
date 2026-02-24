@@ -35,16 +35,8 @@ class MainScene extends GameScene {
       .addSystem(new PlayerRegistrationSystem())
       .addSystem(new ScoringSystem());
 
-    this.addLights();
-  }
-
-  private addLights() {
-    this.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-    const cameraLight = new THREE.DirectionalLight(0xffffff, 1);
-    cameraLight.position.set(0, 5, 1);
-    this.world.camera.add(cameraLight);
     this.add(this.world.camera);
+    this.background = new THREE.Color(0x03000e);
   }
 }
 

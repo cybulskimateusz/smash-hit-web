@@ -1,43 +1,93 @@
 import CameraRail from '@desktop/components/CameraRail';
 import type Entity from '@desktop/core/Entity';
 import System from '@desktop/core/System';
-import ClockManager from '@desktop/singletons/ClockManager';
 import GameSettingsManager from '@desktop/singletons/GameSettingsManager';
 import autoBind from 'auto-bind';
+import gsap from 'gsap';
 import { Vector3 } from 'three';
 
 const DEFAULT_CAMERA_SPEED = 0.025;
-const CAMERA_VIEW_DISTANCE = 0.3;
+const CAMERA_VIEW_DISTANCE = 0.5;
+const ROTATION_INTERVAL = 5;
+const CAMERA_SMOOTH_FACTOR = 0.05;
 
 export default class extends System {
   private currentRail?: CameraRail;
   private nextRail?: CameraRail;
 
   private currentRailLength = 0;
-  private railStartedAt = ClockManager.instance.currentTime;
+  private currentRailDistance = 0;
+  private lastTime = -1;
   private cameraSpeed = DEFAULT_CAMERA_SPEED;
+  private difficulty = 0;
+
+  private railsSinceRotation = 0;
+  private rotationTimeline = gsap.timeline({ paused: true });
+  private cameraTangent = new Vector3();
 
   init(): void {
     autoBind(this);
   }
 
   update(time: number): void {
-    this.updateProgress(time);
+    if (this.lastTime < 0) {
+      this.lastTime = time;
+    }
+    const delta = time - this.lastTime;
+    this.lastTime = time;
+
+    this.updateProgress(delta);
     this.scheduleRail();
     this.moveCamera();
+    this.rotateCamera();
 
-    this.cameraSpeed = DEFAULT_CAMERA_SPEED * GameSettingsManager.instance.difficulty;
+    if (this.difficulty === GameSettingsManager.instance.difficulty) return;
+    this.difficulty = GameSettingsManager.instance.difficulty;
+    gsap.to(this, {
+      cameraSpeed: DEFAULT_CAMERA_SPEED * this.difficulty,
+      duration: 3,
+    });
+  }
+
+  private rotateCamera() {
+    if (this.rotationTimeline.isActive()) return;
+
+    const reduceRotationWithLevel = ROTATION_INTERVAL * this.difficulty;
+    const railsToPass = ROTATION_INTERVAL + reduceRotationWithLevel;
+
+    if (this.railsSinceRotation < railsToPass) return;
+    if (!this.currentRail) return;
+    
+    this.railsSinceRotation = 0;
+
+    const tangent = this.getCameraTangent().normalize();
+    const startUp = this.world.camera.up.clone();
+    const targetUp = startUp.clone().applyAxisAngle(tangent, Math.PI / 2);
+    const progress = { value: 0 };
+
+    this.rotationTimeline.to(progress, {
+      value: 1,
+      duration: 5,
+      onUpdate: () => {
+        this.world.camera.up.copy(startUp).lerp(targetUp, progress.value).normalize();
+      },
+    }).play();
   }
 
   private moveCamera() {
     if (!this.currentRail || !this.nextRail) return;
   
-    const position = this.currentRail.rail.getPointAt(this.currentRail.progress);
+    const targetPosition = this.currentRail.rail.getPointAt(this.currentRail.progress);
+    const targetTangent = this.getCameraTangent();
 
-    const tangent = this.getCameraTangent();
+    if (this.cameraTangent.lengthSq() === 0) {
+      this.cameraTangent.copy(targetTangent);
+    }
 
-    this.world.camera.position.copy(position);
-    this.world.camera.lookAt(position.clone().add(tangent));
+    this.world.camera.position.lerp(targetPosition, CAMERA_SMOOTH_FACTOR);
+    this.cameraTangent.lerp(targetTangent, CAMERA_SMOOTH_FACTOR);
+
+    this.world.camera.lookAt(this.world.camera.position.clone().add(this.cameraTangent));
   }
 
   private getCameraTangent(): Vector3 {
@@ -52,11 +102,10 @@ export default class extends System {
     return this.nextRail.rail.getTangentAt(this.currentRail.progress - (1 - CAMERA_VIEW_DISTANCE));
   }
 
-  private updateProgress(time: number) {
+  private updateProgress(delta: number) {
     if (!this.currentRail) return;
-    const elapsed = time - this.railStartedAt;
-    const distance = elapsed * this.cameraSpeed;
-    const progress = Math.min(distance / this.currentRailLength, 1);
+    this.currentRailDistance += delta * this.cameraSpeed;
+    const progress = Math.min(this.currentRailDistance / this.currentRailLength, 1);
     this.currentRail.progress = progress;
     if (progress >= 1) this.currentRail = undefined;
   }
@@ -71,7 +120,9 @@ export default class extends System {
     this.nextRail = availableEntities[1].get(CameraRail)!;
 
     this.currentRailLength = this.currentRail.rail.getLength();
-    this.railStartedAt = ClockManager.instance.currentTime;
+    this.currentRailDistance = 0;
+
+    if (!this.rotationTimeline.isActive()) this.railsSinceRotation++;
   }
 
   onEntityRemoved(_entity: Entity): void {}

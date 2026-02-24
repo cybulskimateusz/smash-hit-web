@@ -7,6 +7,8 @@ import Transform from '@desktop/components/Transform';
 import type Entity from '@desktop/core/Entity';
 import type World from '@desktop/core/World';
 import RAPIER from '@dimforge/rapier3d';
+import DisplacementGlowingMaterial from 
+  '@src/desktop/materials/DisplacementGlowingMaterial/DisplacementGlowingMaterial';
 import * as THREE from 'three';
 
 export interface BallOptions {
@@ -35,7 +37,10 @@ export default function createBall(
   transform.position.copy(position);
 
   const geometry = new THREE.SphereGeometry(radius, 16, 16);
-  const material = new THREE.MeshStandardMaterial({ color });
+  const material = new DisplacementGlowingMaterial();
+  material.color = new THREE.Color(color);
+  material.emissionRatio = 10;
+  material.glowColor = new THREE.Color(color);
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.copy(position);
 
@@ -60,7 +65,7 @@ export default function createBall(
 
   if (owner) {
     const ownedBy = new OwnedBy();
-    ownedBy.player = owner;
+    ownedBy.owner = owner;
     entity.add(ownedBy);
   }
 

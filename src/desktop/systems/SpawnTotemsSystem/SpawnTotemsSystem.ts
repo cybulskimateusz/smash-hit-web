@@ -2,6 +2,8 @@ import Corridor from '@desktop/components/Corridor';
 import type Entity from '@desktop/core/Entity';
 import System from '@desktop/core/System';
 import createTotem from '@desktop/prefabs/entities/createTotem';
+import OwnedBy from '@src/desktop/components/OwnedBy';
+import ScoreReward from '@src/desktop/components/ScoreReward';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 
@@ -18,6 +20,7 @@ export default class SpawnTotemsSystem extends System {
 
   update(): void {
     this.query(Corridor).forEach(this.spawnTotemsInCorridor);
+    this.query(ScoreReward, OwnedBy).forEach(this.cleanUnowned);
   }
 
   private spawnTotemsInCorridor(entity: Entity): void {
@@ -40,10 +43,19 @@ export default class SpawnTotemsSystem extends System {
         .addScaledVector(right, Math.cos(angle) * radius * 0.5)
         .addScaledVector(realUp, Math.sin(angle) * radius * 0.5);
 
-      createTotem(this.world, {
+      const totem = createTotem(this.world, {
         position: position.add(offset)
       });
+      const ownedBy = new OwnedBy();
+      ownedBy.owner = entity;
+      totem.add(ownedBy);
     }
+  }
+
+  private cleanUnowned(entity: Entity): void {
+    const ownedBy = entity.get(OwnedBy);
+    if (this.world.entities.includes(ownedBy!.owner)) return;
+    this.world.destroyEntity(entity);
   }
 
   onEntityRemoved(_entity: Entity): void {}
