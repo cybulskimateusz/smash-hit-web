@@ -20,8 +20,8 @@ export interface TotemOptions {
 }
 
 const TOTEM_GEOMETRIES = {
-  box: new THREE.BoxGeometry(3, 4, 3),
-  sphere: new THREE.SphereGeometry(3, 32, 32),
+  box: new THREE.BoxGeometry(10, 20, 10),
+  sphere: new THREE.SphereGeometry(6, 32, 32),
 };
 
 const TOTEM_DEFAULT_PROPS: TotemOptions = {

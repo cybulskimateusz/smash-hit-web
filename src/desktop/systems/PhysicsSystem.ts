@@ -20,6 +20,10 @@ class PhysicsSystem extends System {
 
   update() {
     if (!this.rapierWorld) return;
+
+    const gravity = this.world.camera.up.clone().negate().multiplyScalar(9.81);
+    this.rapierWorld.gravity = { x: gravity.x, y: gravity.y, z: gravity.z };
+
     this.createPendingBodies();
     this.rapierWorld.step(this.eventQueue);
     this.handleCollisionEvents();
