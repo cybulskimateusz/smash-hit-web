@@ -8,6 +8,7 @@ import type Entity from '@desktop/core/Entity';
 import type World from '@desktop/core/World';
 import GlassMaterial from '@desktop/materials/GlassMaterial/GlassMaterial';
 import RAPIER from '@dimforge/rapier3d';
+import Audible from '@src/desktop/components/Audible';
 import * as THREE from 'three';
 
 export interface TotemOptions {
@@ -81,13 +82,17 @@ export default function createTotem(
 
   const scoreReward = new ScoreReward();
 
+  const audioNode = new Audible();
+  audioNode.audio = 'shratterGlass';
+
   entity
     .add(transform)
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
     .add(meshSplitter)
-    .add(scoreReward);
+    .add(scoreReward)
+    .add(audioNode);
 
   return entity;
 }

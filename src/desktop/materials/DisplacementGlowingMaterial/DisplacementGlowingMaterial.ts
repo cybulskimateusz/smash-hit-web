@@ -8,7 +8,7 @@ class DisplacementGlowingMaterial extends THREE.MeshStandardMaterial {
 
   constructor() {
     super({
-      ...AssetManager.instance.textureMaps.get('metal_plate'),
+      ...AssetManager.instance.textureMaps.get('walls_texture'),
       color: 0x000000,
       emissiveIntensity: 1.77,
       emissive: 0xffffff,

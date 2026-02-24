@@ -7,6 +7,7 @@ import Transform from '@desktop/components/Transform';
 import type Entity from '@desktop/core/Entity';
 import type World from '@desktop/core/World';
 import RAPIER from '@dimforge/rapier3d';
+import Audible from '@src/desktop/components/Audible';
 import DisplacementGlowingMaterial from 
   '@src/desktop/materials/DisplacementGlowingMaterial/DisplacementGlowingMaterial';
 import * as THREE from 'three';
@@ -56,12 +57,16 @@ export default function createBall(
   const temporary =  new Temporary();
   temporary.lifespan = 5000;
 
+  const audible = new Audible();
+  audible.audio = 'shot';
+
   entity
     .add(transform)
     .add(threeMesh)
     .add(rigidBody)
     .add(collider)
-    .add(temporary);
+    .add(temporary)
+    .add(audible);
 
   if (owner) {
     const ownedBy = new OwnedBy();

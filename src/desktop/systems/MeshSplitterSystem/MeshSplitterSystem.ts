@@ -7,6 +7,7 @@ import Transform from '@desktop/components/Transform';
 import type Entity from '@desktop/core/Entity'; 
 import QueuedWorkSystem from '@desktop/core/QueuedWorkSystem';
 import getExplosionMap3D from '@desktop/utils/three/getExplosionMap3D/getExplosionMap3D';
+import Audible from '@src/desktop/components/Audible';
 import OwnedBy from '@src/desktop/components/OwnedBy';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
@@ -24,8 +25,8 @@ class MeshSplitterSystem extends QueuedWorkSystem {
 
   init(): void { autoBind(this); }
   update(): void {
-    this.query(MeshSplitter, ThreeObject).forEach(this.scheduleSplit);
     super.update();
+    this.query(MeshSplitter, ThreeObject).forEach(this.scheduleSplit);
   }
 
   private scheduleSplit(entity: Entity) {
@@ -48,6 +49,9 @@ class MeshSplitterSystem extends QueuedWorkSystem {
     const cellGeometries = getExplosionMap3D({ ...meshSplitter, boxSize: meshBounds, center });
 
     const sourceBrush = new Brush(mesh.geometry.clone());
+
+    const audio = entity.get(Audible);
+    if (audio) audio.shouldPlay = true;
 
     const pieces = cellGeometries.map((geometry, index) => ({
       geometry,

@@ -9,6 +9,6 @@ export interface TextureMaps {
     metalnessMap?: THREE.Texture | null;
 }
 
-export type TextureMapsName = 'metal_plate'
+export type TextureMapsName = 'walls_texture'
 
 export type TextureMapsRegistry = Map<TextureMapsName, TextureMaps>

@@ -1,4 +1,5 @@
 import GameScene from '@desktop/components/GameScene';
+import AudibleSystem from '@desktop/systems/AudibleSystem';
 import CameraMovementSystem from '@desktop/systems/CameraMovementSystem/CameraMovementSystem';
 import CameraRailGenerationSystem from '@desktop/systems/CameraRailGenerationSystem/CameraRailGenerationSystem';
 import CleanTemporariesSystem from '@desktop/systems/CleanTemporariesSystem';
@@ -17,13 +18,22 @@ import SpawnTotemsSystem from '@desktop/systems/SpawnTotemsSystem/SpawnTotemsSys
 import ThrowBallSystem from '@desktop/systems/ThrowBallSystem';
 import * as THREE from 'three';
 
+import Audible from '../components/Audible';
+
 class MainScene extends GameScene {
   init(): void {
+    this.add(this.world.camera);
+    this.background = new THREE.Color(0x03000e);
+    this.addAudioListener();
+
+    this.addBackgroundSounds();
+    
     this.world
       .addSystem(new RenderSystem(this))
       .addSystem(new PhysicsSystem())
       .addSystem(new MeshSplitterSystem())
       .addSystem(new MeshSplitterOnCollisionSystem())
+      .addSystem(new AudibleSystem(this))
       .addSystem(new PhysicsDebrisSystem())
       .addSystem(new GlobalUniformsMaterialsSystem())
       .addSystem(new CameraMovementSystem())
@@ -35,8 +45,19 @@ class MainScene extends GameScene {
       .addSystem(new PlayerRegistrationSystem())
       .addSystem(new ScoringSystem());
 
-    this.add(this.world.camera);
-    this.background = new THREE.Color(0x03000e);
+  }
+  
+  private addAudioListener() {
+    const listener = new THREE.AudioListener();
+    this.world.camera.add(listener);
+  }
+
+  private addBackgroundSounds() {
+    const backgroundAudible = new Audible();
+    backgroundAudible.audio = 'background';
+    backgroundAudible.shouldPlay = true;
+    backgroundAudible.infinite = true;
+    this.world.createEntity().add(backgroundAudible);
   }
 }
 
