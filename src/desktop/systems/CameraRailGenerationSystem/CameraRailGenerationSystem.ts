@@ -41,9 +41,9 @@ export default class extends System {
 
   private destroyIfFinished(entity: Entity) {
     const rail = entity.get(CameraRail);
-    const railsFinished = rail!.progress >= 1;
+    const railFinished = rail!.progress >= 1;
 
-    if (!railsFinished) return;
+    if (!railFinished) return;
     this.world.destroyEntity(entity);
     this.rails.shift();
   }

@@ -7,6 +7,7 @@ import Transform from '@desktop/components/Transform';
 import type Entity from '@desktop/core/Entity'; 
 import QueuedWorkSystem from '@desktop/core/QueuedWorkSystem';
 import getExplosionMap3D from '@desktop/utils/three/getExplosionMap3D/getExplosionMap3D';
+import OwnedBy from '@src/desktop/components/OwnedBy';
 import autoBind from 'auto-bind';
 import * as THREE from 'three';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
@@ -107,6 +108,9 @@ class MeshSplitterSystem extends QueuedWorkSystem {
       .add(pieceMesh)
       .add(new Debrie())
       .add(new Temporary());
+      
+    const ownedBy = item.reference.get(OwnedBy);
+    if (ownedBy) pieceEntity.add(ownedBy);
 
     item.reference.get(MeshSplitter)!.debris.push(pieceEntity);
   }

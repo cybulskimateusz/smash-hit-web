@@ -28,7 +28,7 @@ export default class ScoringSystem extends System {
 
     if (!ball?.has(OwnedBy)) return;
 
-    const owner = ball.get(OwnedBy)!.player;
+    const owner = ball.get(OwnedBy)!.owner;
     const player = owner.get(Player);
 
     totem.remove(ScoreReward);

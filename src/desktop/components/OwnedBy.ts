@@ -1,7 +1,7 @@
 import type Entity from '@desktop/core/Entity';
 
 class OwnedBy {
-  player!: Entity;
+  owner!: Entity;
 }
 
 export default OwnedBy;
